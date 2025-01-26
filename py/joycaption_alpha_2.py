@@ -84,7 +84,11 @@ def load_models(model_path, dtype, vlm_lora, device):
     use_lora = True if vlm_lora != "none" else False
     CLIP_PATH = download_hg_model("google/siglip-so400m-patch14-384", "clip")
     CHECKPOINT_PATH = os.path.join(folder_paths.models_dir, "Joy_caption", "cgrkzexw-599808")
+    if not os.path.exists(CHECKPOINT_PATH) and os.path.exists("/stable-diffusion-cache/models/Joy_caption/cgrkzexw-599808"):
+        CHECKPOINT_PATH = "/stable-diffusion-cache/models/Joy_caption/cgrkzexw-599808"
     LORA_PATH = os.path.join(CHECKPOINT_PATH, "text_model")
+    if not os.path.exists(LORA_PATH) and os.path.exists('/stable-diffusion-cache/models/Joy_caption_alpha/text_model'):
+        LORA_PATH = '/stable-diffusion-cache/models/Joy_caption/text_model'
 
     try:
         if dtype=="nf4":

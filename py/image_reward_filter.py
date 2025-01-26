@@ -41,7 +41,7 @@ class ImageRewardFilter:
             device = "cuda"
 
         import ImageReward as RM
-        reward_model = RM.load("ImageReward-v1.0")
+        reward_model = RM.load("ImageReward-v1.0", download_root=os.path.join(folder_paths.models_dir, "ImageReward-v1.0"))
         reward_model = reward_model.to(device=device)
 
         with torch.no_grad():

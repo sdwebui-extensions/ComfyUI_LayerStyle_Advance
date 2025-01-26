@@ -65,6 +65,8 @@ def get_bert_base_uncased_model_path():
     if glob.glob(os.path.join(comfy_bert_model_base, '**/model.safetensors'), recursive=True):
         print('grounding-dino is using models/bert-base-uncased')
         return comfy_bert_model_base
+    if os.path.exists("/stable-diffusion-cache/models/models--bert-base-uncased"):
+        return "/stable-diffusion-cache/models/models--bert-base-uncased"
     return 'bert-base-uncased'
 
 def list_sam_model():
@@ -72,7 +74,7 @@ def list_sam_model():
 
 def load_sam_model(model_name):
     sam_checkpoint_path = get_local_filepath(
-        sam_model_list[model_name]["model_url"], sam_model_dir_name)
+        sam_model_list[model_name]["model_url"], sam_model_dir_name, cache_dir="/stable-diffusion-cache/models/sams")
     model_file_name = os.path.basename(sam_checkpoint_path)
     model_type = model_file_name.split('.')[0]
     if 'hq' not in model_type and 'mobile' not in model_type:
@@ -84,7 +86,7 @@ def load_sam_model(model_name):
     sam.model_name = model_file_name
     return sam
 
-def get_local_filepath(url, dirname, local_file_name=None):
+def get_local_filepath(url, dirname, local_file_name=None, cache_dir=None):
     if not local_file_name:
         parsed_url = urlparse(url)
         local_file_name = os.path.basename(parsed_url.path)
@@ -101,6 +103,8 @@ def get_local_filepath(url, dirname, local_file_name=None):
     destination = os.path.join(folder, local_file_name)
     if not os.path.exists(destination):
         logger.warn(f'downloading {url} to {destination}')
+        if cache_dir is not None and os.path.exists(os.path.join(cache_dir, local_file_name)):
+            return os.path.join(cache_dir, local_file_name)
         download_url_to_file(url, destination)
     return destination
 
@@ -111,7 +115,8 @@ def load_groundingdino_model(model_name):
     dino_model_args = local_groundingdino_SLConfig.fromfile(
         get_local_filepath(
             groundingdino_model_list[model_name]["config_url"],
-            groundingdino_model_dir_name
+            groundingdino_model_dir_name,
+            cache_dir="/stable-diffusion-cache/models/grounding-dino"
         ),
     )
 

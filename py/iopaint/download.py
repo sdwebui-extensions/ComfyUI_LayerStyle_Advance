@@ -286,9 +286,13 @@ def scan_converted_diffusers_models(cache_dir) -> List[ModelInfo]:
 
 def scan_models() -> List[ModelInfo]:
     model_dir = os.getenv("XDG_CACHE_HOME", DEFAULT_MODEL_DIR)
+    cache_dir = '/stable-diffusion-cache/models/lama'
     available_models = []
     available_models.extend(scan_inpaint_models(model_dir))
+    available_models.extend(scan_inpaint_models(cache_dir))
     available_models.extend(scan_single_file_diffusion_models(model_dir))
+    available_models.extend(scan_single_file_diffusion_models(cache_dir))
     available_models.extend(scan_diffusers_models())
     available_models.extend(scan_converted_diffusers_models(model_dir))
+    available_models.extend(scan_converted_diffusers_models(cache_dir))
     return available_models

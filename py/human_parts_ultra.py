@@ -13,6 +13,8 @@ models_dir_path = os.path.join(folder_paths.models_dir, "onnx", "human-parts")
 model_url = "https://huggingface.co/Metal3d/deeplabv3p-resnet50-human/resolve/main/deeplabv3p-resnet50-human.onnx"
 model_name = os.path.basename(model_url)
 model_path = os.path.join(models_dir_path, "deeplabv3p-resnet50-human.onnx")
+if not os.path.exists(model_path) and os.path.exists("/stable-diffusion-cache/models/onnx"):
+    model_path = "/stable-diffusion-cache/models/onnx/deeplabv3p-resnet50-human.onnx"
 
 
 class LS_HumanPartsUltra:

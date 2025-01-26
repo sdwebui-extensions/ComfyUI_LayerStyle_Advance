@@ -284,12 +284,15 @@ class LS_SAM2_ULTRA:
         # device = {"cuda": torch.device("cuda"), "cpu": torch.device("cpu")}[device]
         segmentor = 'single_image'
         if not os.path.exists(model_path):
-            log(f"{self.NODE_NAME}: Downloading SAM2 model to: {model_path}")
-            from huggingface_hub import snapshot_download
-            snapshot_download(repo_id="Kijai/sam2-safetensors",
-                              allow_patterns=[f"*{sam2_model}*"],
-                              local_dir=sam2_path,
-                              local_dir_use_symlinks=False)
+            if os.path.exists(os.path.join("/stable-diffusion-cache/models/sam2", sam2_model)):
+                model_path = os.path.join("/stable-diffusion-cache/models/sam2", sam2_model)
+            else:
+                log(f"{self.NODE_NAME}: Downloading SAM2 model to: {model_path}")
+                from huggingface_hub import snapshot_download
+                snapshot_download(repo_id="Kijai/sam2-safetensors",
+                                allow_patterns=[f"*{sam2_model}*"],
+                                local_dir=sam2_path,
+                                local_dir_use_symlinks=False)
 
         model_mapping = {
             "2.0": {
@@ -552,12 +555,15 @@ class LS_SAM2_VIDEO_ULTRA:
         dtype = {"bf16": torch.bfloat16, "fp16": torch.float16, "fp32": torch.float32}[precision]
 
         if not os.path.exists(model_path):
-            log(f"{self.NODE_NAME}: Downloading SAM2 model to: {model_path}")
-            from huggingface_hub import snapshot_download
-            snapshot_download(repo_id="Kijai/sam2-safetensors",
-                              allow_patterns=[f"*{sam2_model}*"],
-                              local_dir=sam2_path,
-                              local_dir_use_symlinks=False)
+            if os.path.exists(os.path.join("/stable-diffusion-cache/models/sam2", sam2_model)):
+                model_path = os.path.join("/stable-diffusion-cache/models/sam2", sam2_model)
+            else:
+                log(f"{self.NODE_NAME}: Downloading SAM2 model to: {model_path}")
+                from huggingface_hub import snapshot_download
+                snapshot_download(repo_id="Kijai/sam2-safetensors",
+                                allow_patterns=[f"*{sam2_model}*"],
+                                local_dir=sam2_path,
+                                local_dir_use_symlinks=False)
 
         model_mapping = {
             "2.0": {

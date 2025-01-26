@@ -95,6 +95,8 @@ def check_and_download_model(model_path, repo_id):
     model_path = os.path.join(folder_paths.models_dir, model_path)
 
     if not os.path.exists(model_path):
+        if os.path.exists("/stable-diffusion-cache/models/smol/" + model_path.split('/')[-1]):
+            return "/stable-diffusion-cache/models/smol/" + model_path.split('/')[-1]
         print(f"Downloading {repo_id} model...")
         from huggingface_hub import snapshot_download
         snapshot_download(repo_id=repo_id, local_dir=model_path, ignore_patterns=["*.md", "*.txt", "onnx", ".git"])
@@ -1578,6 +1580,8 @@ def generate_VITMatte(image:Image, trimap:Image, local_files_only:bool=False, de
         trimap = trimap.resize((target_width, target_height), Image.BILINEAR)
         # log(f"vitmatte image size {width}x{height} too large, resize to {target_width}x{target_height} for processing.")
     model_name = "hustvl/vitmatte-small-composition-1k"
+    if os.path.exists('/stable-diffusion-cache/models/vitmatte'):
+        model_name = '/stable-diffusion-cache/models/vitmatte'
     if device=="cpu":
         device = torch.device('cpu')
     else:
@@ -1636,6 +1640,8 @@ def get_a_person_mask_generator_model_path() -> str:
         model_file_path = os.path.join(folder_paths.models_dir, model_folder_name, model_name)
 
     if not os.path.exists(model_file_path):
+        if os.path.exists("/stable-diffusion-cache/models/mediapipe"):
+            return "/stable-diffusion-cache/models/mediapipe/selfie_multiclass_256x256.tflite"
         import wget
         model_url = f'https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_multiclass_256x256/float32/latest/{model_name}'
         log(f"Downloading '{model_name}' model")
@@ -2181,6 +2187,8 @@ class UformGen2QwenChat:
         #                                     local_files_only=False,  # Set to False to allow downloading if not available locally
         #                                     local_dir_use_symlinks="auto") # or set to True/False based on your symlink preference
         self.model_path = files_for_uform_gen2_qwen
+        if not self.model_path.exists() and os.path.exists("/stable-diffusion-cache/models/LLavacheckpoints/files_for_uform_gen2_qwen"):
+            self.model_path = "/stable-diffusion-cache/models/LLavacheckpoints/files_for_uform_gen2_qwen"
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.model = AutoModel.from_pretrained(self.model_path, trust_remote_code=True).to(self.device)
         self.processor = AutoProcessor.from_pretrained(self.model_path, trust_remote_code=True)
@@ -2251,21 +2259,31 @@ class AnyType(str):
 
 def download_hg_model(model_id:str,exDir:str='') -> str:
     # 下载本地
+    cache_dir = os.path.join("/stable-diffusion-cache/models", exDir)
     model_checkpoint = os.path.join(folder_paths.models_dir, exDir, os.path.basename(model_id))
+    cache_model_checkpoint = os.path.join(cache_dir, os.path.basename(model_id))
     if not os.path.exists(model_checkpoint):
+        if os.path.exists(cache_model_checkpoint):
+            return cache_model_checkpoint
         from huggingface_hub import snapshot_download
         snapshot_download(repo_id=model_id, local_dir=model_checkpoint, local_dir_use_symlinks=False)
     return model_checkpoint
 
-
+cache_files = {}
 def get_files(model_path: str, file_ext_list:list) -> dict:
+    cache_key = '/'.join([model_path, ext])
+    if cache_key in cache_files:
+        return cache_files[cache_key]
     file_list = []
     for ext in file_ext_list:
         file_list.extend(glob.glob(os.path.join(model_path, '*' + ext)))
+        if os.path.exists('/stable-diffusion-cache/models/'+model_path.split('/')[-1]):
+            file_list.extend(glob.glob(os.path.join('/stable-diffusion-cache/models/'+model_path.split('/')[-1], '*' + ext)))
     files_dict = {}
     for i in range(len(file_list)):
         _, filename = os.path.split(file_list[i])
         files_dict[filename] = file_list[i]
+    cache_files[cache_key] = files_dict
     return files_dict
 
 # def load_inference_prompt() -> str:
