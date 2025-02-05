@@ -2271,6 +2271,7 @@ def download_hg_model(model_id:str,exDir:str='') -> str:
 
 cache_files = {}
 def get_files(model_path: str, file_ext_list:list) -> dict:
+    ext = '_'.join(file_ext_list)
     cache_key = '/'.join([model_path, ext])
     if cache_key in cache_files:
         return cache_files[cache_key]
