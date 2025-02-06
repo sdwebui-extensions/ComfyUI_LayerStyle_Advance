@@ -32,7 +32,7 @@ def switch_mps_device(model_name, device):
     return device
 
 
-def get_cache_path_by_url(url):
+def get_cache_path_by_url(url, cache_dir=None):
     parts = urlparse(url)
     # hub_dir = get_dir()
     # model_dir = os.path.join(hub_dir, "checkpoints")
@@ -41,14 +41,17 @@ def get_cache_path_by_url(url):
         os.makedirs(model_dir)
     filename = os.path.basename(parts.path)
     cached_file = os.path.join(model_dir, filename)
+    if not os.path.exists(cached_file) and cache_dir:
+        if os.path.exists(os.path.join(cache_dir, filename)):
+            return os.path.join(cache_dir, filename)
     return cached_file
 
 
-def download_model(url, model_md5: str = None):
+def download_model(url, model_md5: str = None, cache_dir: str = None):
     if os.path.exists(url):
         cached_file = url
     else:
-        cached_file = get_cache_path_by_url(url)
+        cached_file = get_cache_path_by_url(url, cache_dir)
     if not os.path.exists(cached_file):
         sys.stderr.write('Downloading: "{}" to {}\n'.format(url, cached_file))
         hash_prefix = None
@@ -100,11 +103,11 @@ def handle_error(model_path, model_md5, e):
     exit(-1)
 
 
-def load_jit_model(url_or_path, device, model_md5: str):
+def load_jit_model(url_or_path, device, model_md5: str, cache_dir: str = None):
     if os.path.exists(url_or_path):
         model_path = url_or_path
     else:
-        model_path = download_model(url_or_path, model_md5)
+        model_path = download_model(url_or_path, model_md5, cache_dir=cache_dir)
     model_path = os.path.normpath(model_path)
     logger.info(f"Loading model from: {model_path}")
 
@@ -116,11 +119,11 @@ def load_jit_model(url_or_path, device, model_md5: str):
     return model
 
 
-def load_model(model: torch.nn.Module, url_or_path, device, model_md5):
+def load_model(model: torch.nn.Module, url_or_path, device, model_md5, cache_dir=None):
     if os.path.exists(url_or_path):
         model_path = url_or_path
     else:
-        model_path = download_model(url_or_path, model_md5)
+        model_path = download_model(url_or_path, model_md5, cache_dir=cache_dir)
 
     try:
         logger.info(f"Loading model from: {model_path}")

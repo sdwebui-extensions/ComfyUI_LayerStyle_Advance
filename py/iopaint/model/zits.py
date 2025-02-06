@@ -240,34 +240,34 @@ class ZITS(InpaintModel):
 
     def init_model(self, device, **kwargs):
         self.wireframe = load_jit_model(
-            ZITS_WIRE_FRAME_MODEL_URL, device, ZITS_WIRE_FRAME_MODEL_MD5
+            ZITS_WIRE_FRAME_MODEL_URL, device, ZITS_WIRE_FRAME_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama"
         )
         self.edge_line = load_jit_model(
-            ZITS_EDGE_LINE_MODEL_URL, device, ZITS_EDGE_LINE_MODEL_MD5
+            ZITS_EDGE_LINE_MODEL_URL, device, ZITS_EDGE_LINE_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama"
         )
         self.structure_upsample = load_jit_model(
-            ZITS_STRUCTURE_UPSAMPLE_MODEL_URL, device, ZITS_STRUCTURE_UPSAMPLE_MODEL_MD5
+            ZITS_STRUCTURE_UPSAMPLE_MODEL_URL, device, ZITS_STRUCTURE_UPSAMPLE_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama"
         )
         self.inpaint = load_jit_model(
-            ZITS_INPAINT_MODEL_URL, device, ZITS_INPAINT_MODEL_MD5
+            ZITS_INPAINT_MODEL_URL, device, ZITS_INPAINT_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama"
         )
 
     @staticmethod
     def download():
-        download_model(ZITS_WIRE_FRAME_MODEL_URL, ZITS_WIRE_FRAME_MODEL_MD5)
-        download_model(ZITS_EDGE_LINE_MODEL_URL, ZITS_EDGE_LINE_MODEL_MD5)
+        download_model(ZITS_WIRE_FRAME_MODEL_URL, ZITS_WIRE_FRAME_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama")
+        download_model(ZITS_EDGE_LINE_MODEL_URL, ZITS_EDGE_LINE_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama")
         download_model(
-            ZITS_STRUCTURE_UPSAMPLE_MODEL_URL, ZITS_STRUCTURE_UPSAMPLE_MODEL_MD5
+            ZITS_STRUCTURE_UPSAMPLE_MODEL_URL, ZITS_STRUCTURE_UPSAMPLE_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama"
         )
-        download_model(ZITS_INPAINT_MODEL_URL, ZITS_INPAINT_MODEL_MD5)
+        download_model(ZITS_INPAINT_MODEL_URL, ZITS_INPAINT_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama")
 
     @staticmethod
     def is_downloaded() -> bool:
         model_paths = [
-            get_cache_path_by_url(ZITS_WIRE_FRAME_MODEL_URL),
-            get_cache_path_by_url(ZITS_EDGE_LINE_MODEL_URL),
-            get_cache_path_by_url(ZITS_STRUCTURE_UPSAMPLE_MODEL_URL),
-            get_cache_path_by_url(ZITS_INPAINT_MODEL_URL),
+            get_cache_path_by_url(ZITS_WIRE_FRAME_MODEL_URL, cache_dir="/stable-diffusion-cache/models/lama"),
+            get_cache_path_by_url(ZITS_EDGE_LINE_MODEL_URL, cache_dir="/stable-diffusion-cache/models/lama"),
+            get_cache_path_by_url(ZITS_STRUCTURE_UPSAMPLE_MODEL_URL, cache_dir="/stable-diffusion-cache/models/lama"),
+            get_cache_path_by_url(ZITS_INPAINT_MODEL_URL, cache_dir="/stable-diffusion-cache/models/lama"),
         ]
         return all([os.path.exists(it) for it in model_paths])
 

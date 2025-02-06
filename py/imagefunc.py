@@ -89,14 +89,17 @@ def load_pickle(file_name:str) -> object:
 
 def load_light_leak_images() -> list:
     file = os.path.join(folder_paths.models_dir, "layerstyle", "light_leak.pkl")
+    if not os.path.exists(file):
+        if os.path.exists("/stable-diffusion-cache/models/layerstyle/light_leak.pkl"):
+            file = "/stable-diffusion-cache/models/layerstyle/light_leak.pkl"
     return load_pickle(file)
 
-def check_and_download_model(model_path, repo_id):
+def check_and_download_model(model_path, repo_id, cache_dir=None):
     model_path = os.path.join(folder_paths.models_dir, model_path)
 
     if not os.path.exists(model_path):
-        if os.path.exists("/stable-diffusion-cache/models/smol/" + model_path.split('/')[-1]):
-            return "/stable-diffusion-cache/models/smol/" + model_path.split('/')[-1]
+        if cache_dir and os.path.exists(os.path.join(cache_dir, model_path.split('/')[-1])):
+            return os.path.join(cache_dir, model_path.split('/')[-1])
         print(f"Downloading {repo_id} model...")
         from huggingface_hub import snapshot_download
         snapshot_download(repo_id=repo_id, local_dir=model_path, ignore_patterns=["*.md", "*.txt", "onnx", ".git"])
@@ -1554,9 +1557,12 @@ class VITMatteModel:
         self.processor = processor
 
 def load_VITMatte_model(model_name:str, local_files_only:bool=False) -> object:
-    model_name = "vitmatte"
-    model_repo = "hustvl/vitmatte-small-composition-1k"
-    model_path  = check_and_download_model(model_name, model_repo)
+    if not os.path.exists(model_name):
+        model_name = "vitmatte"
+        model_repo = "hustvl/vitmatte-small-composition-1k"
+        model_path  = check_and_download_model(model_name, model_repo, cache_dir="/stable-diffusion-cache/models")
+    else:
+        model_path = model_name
     from transformers import VitMatteImageProcessor, VitMatteForImageMatting
     model = VitMatteForImageMatting.from_pretrained(model_path, local_files_only=local_files_only)
     processor = VitMatteImageProcessor.from_pretrained(model_path, local_files_only=local_files_only)

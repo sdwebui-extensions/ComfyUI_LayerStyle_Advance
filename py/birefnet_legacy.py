@@ -63,6 +63,9 @@ class BiRefNetRemoveBackground:
                 pass
             if not os.path.exists(model_file_path):
                 model_file_path = os.path.join(folder_paths.models_dir, model_folder_name, model_name)
+            if not os.path.exists(model_file_path):
+                if os.path.exists("/stable-diffusion-cache/models/BiRefNet"):
+                    model_file_path = os.path.join("/stable-diffusion-cache/models/BiRefNet", model_name)
             self.load(model_file_path, device=device)
 
         i = pil2tensor(image)

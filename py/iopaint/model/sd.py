@@ -13,6 +13,7 @@ from .utils import (
     is_local_files_only,
 )
 from ..schema import InpaintRequest, ModelType
+import os
 
 
 class SD(DiffusionInpaintModel):
@@ -111,7 +112,7 @@ class SD(DiffusionInpaintModel):
 
 class SD15(SD):
     name = "runwayml/stable-diffusion-inpainting"
-    model_id_or_path = "runwayml/stable-diffusion-inpainting"
+    model_id_or_path = "/stable-diffusion-cache/models/stable-diffusion-inpainting" if os.path.exists("/stable-diffusion-cache/models/stable-diffusion-inpainting") else "runwayml/stable-diffusion-inpainting"
 
 
 class Anything4(SD):

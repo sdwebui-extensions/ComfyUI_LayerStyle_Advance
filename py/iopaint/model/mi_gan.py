@@ -29,15 +29,15 @@ class MIGAN(InpaintModel):
     is_erase_model = True
 
     def init_model(self, device, **kwargs):
-        self.model = load_jit_model(MIGAN_MODEL_URL, device, MIGAN_MODEL_MD5).eval()
+        self.model = load_jit_model(MIGAN_MODEL_URL, device, MIGAN_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama").eval()
 
     @staticmethod
     def download():
-        download_model(MIGAN_MODEL_URL, MIGAN_MODEL_MD5)
+        download_model(MIGAN_MODEL_URL, MIGAN_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama")
 
     @staticmethod
     def is_downloaded() -> bool:
-        return os.path.exists(get_cache_path_by_url(MIGAN_MODEL_URL))
+        return os.path.exists(get_cache_path_by_url(MIGAN_MODEL_URL, cache_dir="/stable-diffusion-cache/models/lama"))
 
     @torch.no_grad()
     def __call__(self, image, mask, config: InpaintRequest):

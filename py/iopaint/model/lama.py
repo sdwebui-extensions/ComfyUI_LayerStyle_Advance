@@ -27,14 +27,14 @@ class LaMa(InpaintModel):
 
     @staticmethod
     def download():
-        download_model(LAMA_MODEL_URL, LAMA_MODEL_MD5)
+        download_model(LAMA_MODEL_URL, LAMA_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama")
 
     def init_model(self, device, **kwargs):
-        self.model = load_jit_model(LAMA_MODEL_URL, device, LAMA_MODEL_MD5).eval()
+        self.model = load_jit_model(LAMA_MODEL_URL, device, LAMA_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama").eval()
 
     @staticmethod
     def is_downloaded() -> bool:
-        return os.path.exists(get_cache_path_by_url(LAMA_MODEL_URL))
+        return os.path.exists(get_cache_path_by_url(LAMA_MODEL_URL, cache_dir="/stable-diffusion-cache/models/lama"))
 
     def forward(self, image, mask, config: InpaintRequest):
         """Input image and output image have same size

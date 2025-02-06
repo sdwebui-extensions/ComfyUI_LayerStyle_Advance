@@ -128,6 +128,7 @@ def load_groundingdino_model(model_name):
         get_local_filepath(
             groundingdino_model_list[model_name]["model_url"],
             groundingdino_model_dir_name,
+            cache_dir="/stable-diffusion-cache/models/grounding-dino"
         ),
     )
     dino.load_state_dict(local_groundingdino_clean_state_dict(

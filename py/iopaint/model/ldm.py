@@ -246,13 +246,13 @@ class LDM(InpaintModel):
 
     def init_model(self, device, **kwargs):
         self.diffusion_model = load_jit_model(
-            LDM_DIFFUSION_MODEL_URL, device, LDM_DIFFUSION_MODEL_MD5
+            LDM_DIFFUSION_MODEL_URL, device, LDM_DIFFUSION_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama"
         )
         self.cond_stage_model_decode = load_jit_model(
-            LDM_DECODE_MODEL_URL, device, LDM_DECODE_MODEL_MD5
+            LDM_DECODE_MODEL_URL, device, LDM_DECODE_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama"
         )
         self.cond_stage_model_encode = load_jit_model(
-            LDM_ENCODE_MODEL_URL, device, LDM_ENCODE_MODEL_MD5
+            LDM_ENCODE_MODEL_URL, device, LDM_ENCODE_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama"
         )
         if self.fp16 and "cuda" in str(device):
             self.diffusion_model = self.diffusion_model.half()
@@ -263,16 +263,16 @@ class LDM(InpaintModel):
 
     @staticmethod
     def download():
-        download_model(LDM_DIFFUSION_MODEL_URL, LDM_DIFFUSION_MODEL_MD5)
-        download_model(LDM_DECODE_MODEL_URL, LDM_DECODE_MODEL_MD5)
-        download_model(LDM_ENCODE_MODEL_URL, LDM_ENCODE_MODEL_MD5)
+        download_model(LDM_DIFFUSION_MODEL_URL, LDM_DIFFUSION_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama")
+        download_model(LDM_DECODE_MODEL_URL, LDM_DECODE_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama")
+        download_model(LDM_ENCODE_MODEL_URL, LDM_ENCODE_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama")
 
     @staticmethod
     def is_downloaded() -> bool:
         model_paths = [
-            get_cache_path_by_url(LDM_DIFFUSION_MODEL_URL),
-            get_cache_path_by_url(LDM_DECODE_MODEL_URL),
-            get_cache_path_by_url(LDM_ENCODE_MODEL_URL),
+            get_cache_path_by_url(LDM_DIFFUSION_MODEL_URL, cache_dir="/stable-diffusion-cache/models/lama"),
+            get_cache_path_by_url(LDM_DECODE_MODEL_URL, cache_dir="/stable-diffusion-cache/models/lama"),
+            get_cache_path_by_url(LDM_ENCODE_MODEL_URL, cache_dir="/stable-diffusion-cache/models/lama"),
         ]
         return all([os.path.exists(it) for it in model_paths])
 

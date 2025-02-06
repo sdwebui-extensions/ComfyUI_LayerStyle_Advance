@@ -1653,16 +1653,16 @@ class FcF(InpaintModel):
             encoder_kwargs=kwargs,
             mapping_kwargs={"num_layers": 2},
         )
-        self.model = load_model(G, FCF_MODEL_URL, device, FCF_MODEL_MD5)
+        self.model = load_model(G, FCF_MODEL_URL, device, FCF_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama")
         self.label = torch.zeros([1, self.model.c_dim], device=device)
 
     @staticmethod
     def download():
-        download_model(FCF_MODEL_URL, FCF_MODEL_MD5)
+        download_model(FCF_MODEL_URL, FCF_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama")
 
     @staticmethod
     def is_downloaded() -> bool:
-        return os.path.exists(get_cache_path_by_url(FCF_MODEL_URL))
+        return os.path.exists(get_cache_path_by_url(FCF_MODEL_URL, cache_dir="/stable-diffusion-cache/models/lama"))
 
     @torch.no_grad()
     def __call__(self, image, mask, config: InpaintRequest):
