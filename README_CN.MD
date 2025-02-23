@@ -121,6 +121,8 @@ If this call came from a _pb2.py file, your generated code is out of date and mu
 ## 更新说明
 **如果本插件更新后出现依赖包错误，请双击运行插件目录下的```install_requirements.bat```(官方便携包)，或 ```install_requirements_aki.bat```(秋叶整合包) 重新安装依赖包。
 
+* 添加 [DeepseekAPI_V2](#DeepseekAPI_V2) 节点，支持阿里云和火山引擎的deepseek api。
+* 添加 [Collage](#Collage) 节点，将多张图片拼合为一张大图。
 * 添加 [DeepSeekAPI](DeepSeekAPI) 节点，使用DeepSeek API进行文本推理。
 * 添加 [SegmentAnythingUltraV3](#SegmentAnythingUltraV3) 和 [LoadSegmentAnythingModels](#LoadSegmentAnythingModels)节点， 在使用多个SAM节点时避免重复加载模型。
 * 添加 [ZhipuGLM4](#ZhipuGLM4) 和 [ZhipuGLM4V](#ZhipuGLM4V)节点，使用智谱API进行文本和视觉推理。目前的智谱模型中，GLM-4-Flash和glm-4v-flash模型是免费的。
@@ -137,6 +139,28 @@ If this call came from a _pb2.py file, your generated code is out of date and mu
 
 
 ## 节点说明
+
+
+### <a id="table1">Collage</a>
+将输入的批量图片随机拼合为一张大图。
+
+![image](image/collage_example.jpg)    
+
+节点选项说明:   
+![image](image/collage_node.jpg)    
+
+* images: 图片输入。
+* florence2_model: 可选输入，用于物体识别裁切。
+* canvas_width: 输出图片的宽度。
+* canvas_height: 输出图片的高度。
+* border_width: 边框宽度。
+* rounded_rect_radius: 边框圆角半径。
+* uniformity: 图片拼合大小的随机性。取值范围为0-1，值越大，大小随机性越大。
+* background_color: 背景色。
+* seed: 随机种子。
+* control_after_generate: 设置每次执行时种子值的变化。
+* object_prompt: 当接入florence2_model时，此处填写物体识别的提示词。
+
 
 ### <a id="table1">QWenImage2Prompt</a>
 根据图片反推提示词。这个节点是[ComfyUI_VLM_nodes](https://github.com/gokayfem/ComfyUI_VLM_nodes)中的```UForm-Gen2 Qwen Node```节点的重新封装，感谢原作者。
@@ -311,6 +335,20 @@ JoyCaption2的extra_options参数节点。
 输出:
 * text: DeepSeek的输出。
 * history: DeepSeek对话历史记录。
+
+### <a id="table1">DeepSeekAPI_V2</a>
+在 [DeepSeekAPI](#DeepSeekAPI) 节点基础上增加支持阿里云和火山引擎的deepseek api，这两家中国云服务商将提供更稳定的api服务。    
+    
+* 在 [火山引擎](https://console.volcengine.com/ai/api/key/) 申请火山引擎api key, 有50万tokens免费额度，如果在申请时填入我的邀请码 ```27RVS1QN```，将额外获得375万R1模型免费tokens。     
+
+* 在 [阿里云](https://bailian.console.aliyun.com/?apiKey=1#/api-key) 申请阿里云api key。    
+
+* 将获得的api key填到```api_key.ini```的```volcengine_api_key``` 和 ```aliyun_api_key``` 字段。 这个文件位于插件根目录下，默认名字是```api_key.ini.example```，请编辑后将文件后缀改为.ini。
+    
+增加选项：   
+![image](image/deepseek_api_v2_node.jpg)
+
+* time_out: 超时时间，默认为300秒。
 
 
 ### <a id="table1">ZhipuGLM4</a>
@@ -673,13 +711,13 @@ all_layers: 包含全部图层的批量图片。
 
 ### <a id="table1">BenUltra</a>
 是[PramaLLC/BEN](https://huggingface.co/PramaLLC/BEN) 项目在ComfyUI中的实现。感谢原作者。    
-从 [huggingface](https://huggingface.co/PramaLLC/BEN/tree/main) 或 [百度网盘](https://pan.baidu.com/s/17mdBxfBl_R97mtNHuiHsxQ?pwd=2jn3)下载```BEN_Base.pth``` 和 ```config.json``` 两个文件并复制到 ```ComfyUI/models/BEN```文件夹。
+从 [huggingface](https://huggingface.co/chflame163/ComfyUI_LayerStyle/tree/main/ComfyUI/models/BEN) 或 [百度网盘](https://pan.baidu.com/s/17mdBxfBl_R97mtNHuiHsxQ?pwd=2jn3)下载全部文件并复制到 ```ComfyUI/models/BEN```文件夹。
 
 ![image](image/ben_ultra_example.jpg)
 
 节点选项说明：
 ![image](image/ben_ultra_node.jpg)
-* ben_model: Ben模型输入。
+* ben_model: Ben模型输入，有BEN_Base和BEN2_base两种模型可选。
 * image: 图片输入。
 * detail_method: 边缘处理方法。提供了VITMatte, VITMatte(local), PyMatting, GuidedFilter。如果首次使用VITMatte后模型已经下载，之后可以使用VITMatte(local)。
 * detail_erode: 遮罩边缘向内侵蚀范围。数值越大，向内修复的范围越大。

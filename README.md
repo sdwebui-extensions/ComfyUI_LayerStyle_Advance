@@ -145,6 +145,8 @@ Please try downgrading the ```protobuf``` dependency package to 3.20.3, or set e
 
 **If the dependency package error after updating,  please double clicking ```repair_dependency.bat``` (for Official ComfyUI Protable) or  ```repair_dependency_aki.bat``` (for ComfyUI-aki-v1.x) in the plugin folder to reinstall the dependency packages.    
 
+* Commit [DeepseekAPI_V2](#DeepseekAPI_V2) noee, supporting AliYun and VolcEngine API.
+* Commit [Collage](#Collage) node to collage images into one.
 * Commit [DeepSeekAPI](DeepSeekAPI) node, Use DeepSeek API for text inference.
 * Commit [SegmentAnythingUltraV3](#SegmentAnythingUltraV3) and [LoadSegmentAnythingModels](#LoadSegmentAnythingModels) nodes, Avoid duplicating model loading when using multiple SAM nodes.
 * Commit [ZhipuGLM4](#ZhipuGLM4) and [ZhipuGLM4V](#ZhipuGLM4V) nodes, Use the Zhipu API for textual and visual inference. Among the current Zhipu models, GLM-4-Flash and glm-4v-flash models are free.
@@ -161,6 +163,27 @@ download Florence-2-Flux-Large and Florence-2-Flux folder from [BaiduNetdisk](ht
 
 
 ## Description
+
+### <a id="table1">Collage</a>
+Randomly collage the input images into one large image.
+
+![image](image/collage_example.jpg)    
+
+Node Options:   
+![image](image/collage_node.jpg)    
+
+* images: The input images.
+* florence2_model: Optional input for object recognition and cropping.
+* canvas_width: Output the width of the image.
+* canvas_height: Output the height of the image.
+* border_width: The border width.
+* rounded_rect_radius: The border fillet radius.
+* uniformity: The randomness of image stitching size. The value range is 0-1, and the larger the value, the greater the randomness of the size.
+* background_color: The background color.
+* seed: The seed of random number.
+* control_after_generate: Seed change options. If this option is fixed, the generated random number will always be the same.
+* object_prompt: When connecting to florence2_model, fill in the prompt words for object recognition here.
+
 
 ### <a id="table1">QWenImage2Prompt</a>
 
@@ -336,6 +359,21 @@ Node Options:
 Outputs:
 * text: Output text of DeepSeek.
 * history: History of DeepSeek conversations.
+
+### <a id="table1">DeepSeekAPI_V2</a>    
+On the basis of the [DeepSeekAPI](#DeepSeekAPI) node, DeepSeek API supporting AliYun and VolcEngine will be added, and these two Chinese cloud service providers will provide more stable API services.
+     
+* On [VolcEngine](https://console.volcengine.com/ai/api/key/) Applying for the VolcEngine API key, there is a free quota of 500 thousand tokens. If you fill in my invitation code ```27RVS1QN``` when applying, you will receive an additional 3.75 million R1 model free tokens.
+
+* On [AliYun](https://bailian.console.aliyun.com/?apiKey=1#/api-key) Apply for AliYun API key.
+
+* Fill in the obtained API key into the fields ```volcengine_api_key``` and ```aliyun_api_key``` of ```api_key.ini```. This file is located in the root directory of the plugin, with a default name of ```api_key.ini.example```. Edit it and change the file extension to '.ini'.
+    
+Add Options:   
+![image](image/deepseek_api_v2_node.jpg)
+
+* time_out: The timeout period is set to 300 seconds by default.
+
 
 ### <a id="table1">ZhipuGLM4</a>
 Use the Zhipu API for text inference, supporting multi node context concatenation.   
@@ -733,15 +771,14 @@ Node Options:
 
 
 ### <a id="table1">BenUltra</a>
-It is the implementation of [PramaLLC/BEN](https://huggingface.co/PramaLLC/BEN)  project in ComfyUI. Thank you to the original author.
-   
-Download the ```BEN_Base.pth``` and ```config.json``` from [huggingface](https://huggingface.co/PramaLLC/BEN/tree/main) or [BaiduNetdisk](https://pan.baidu.com/s/17mdBxfBl_R97mtNHuiHsxQ?pwd=2jn3) and copy to ```ComfyUI/models/BEN``` folder.
+It is the implementation of [PramaLLC/BEN](https://huggingface.co/PramaLLC/BEN)  project in ComfyUI. Thank you to the original author. 
+Download all files from [huggingface](https://huggingface.co/chflame163/ComfyUI_LayerStyle/tree/main/ComfyUI/models/BEN) or [BaiduNetdisk](https://pan.baidu.com/s/17mdBxfBl_R97mtNHuiHsxQ?pwd=2jn3) and copy to ```ComfyUI/models/BEN``` folder.
 
 ![image](image/ben_ultra_example.jpg)
 
 Node Options：
 ![image](image/ben_ultra_node.jpg)
-* ben_model: Ben model input.
+* ben_model: Ben model input. There are two models to choose: BEN_Base and BEN2_base.
 * image: Image input.
 * detail_method: Edge processing methods. provides VITMatte, VITMatte(local), PyMatting, GuidedFilter. If the model has been downloaded after the first use of VITMatte, you can use VITMatte (local) afterwards.
 * detail_erode: Mask the erosion range inward from the edge. the larger the value, the larger the range of inward repair.
