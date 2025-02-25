@@ -42,6 +42,9 @@ class YoloV8Detect:
         ret_yolo_masks = []
 
         from  ultralytics import YOLO
+        model_path = os.path.join(model_path, yolo_model)
+        if not os.path.exists(model_path):
+            model_path = os.path.join(folder_paths.models_dir, 'yolo', yolo_model)
         yolo_model = YOLO(os.path.join(model_path, yolo_model))
 
         for i in image:
