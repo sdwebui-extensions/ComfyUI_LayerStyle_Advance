@@ -56,7 +56,7 @@ Some JSON workflow files in the    ```workflow``` directory, That's examples of 
 
 ### Download Model Files
 
-Chinese domestic users from  [BaiduNetdisk](https://pan.baidu.com/s/1T_uXMX3OKIWOJLPuLijrgA?pwd=1yye)  and other users from [huggingface.co/chflame163/ComfyUI_LayerStyle](https://huggingface.co/chflame163/ComfyUI_LayerStyle/tree/main)  
+Chinese domestic users from  [BaiduNetdisk](https://pan.baidu.com/s/1T_uXMX3OKIWOJLPuLijrgA?pwd=1yye) or [QuarkNetdisk](https://pan.quark.cn/s/4802d6bca7cb) , other users from [huggingface.co/chflame163/ComfyUI_LayerStyle](https://huggingface.co/chflame163/ComfyUI_LayerStyle/tree/main)  
 download all files and copy them to ```ComfyUI\models``` folder. This link provides all the model files required for this plugin.
 Or download the model file according to the instructions of each node.    
 Some nodes named "Ultra" will use the vitmatte model, download the [vitmatte model](https://huggingface.co/hustvl/vitmatte-small-composition-1k/tree/main) and copy to ```ComfyUI/models/vitmatte``` folder, it is also included in the download link above. 
@@ -145,6 +145,8 @@ Please try downgrading the ```protobuf``` dependency package to 3.20.3, or set e
 
 **If the dependency package error after updating,  please double clicking ```repair_dependency.bat``` (for Official ComfyUI Protable) or  ```repair_dependency_aki.bat``` (for ComfyUI-aki-v1.x) in the plugin folder to reinstall the dependency packages.    
 
+* Add QuarkNetdisk model download link.
+* Support numpy 2.x dependency package.
 * Commit [DeepseekAPI_V2](#DeepseekAPI_V2) noee, supporting AliYun and VolcEngine API.
 * Commit [Collage](#Collage) node to collage images into one.
 * Commit [DeepSeekAPI](DeepSeekAPI) node, Use DeepSeek API for text inference.
