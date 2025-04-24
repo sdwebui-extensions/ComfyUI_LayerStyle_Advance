@@ -2193,16 +2193,16 @@ class UformGen2QwenChat:
         #                                     local_dir_use_symlinks="auto") # or set to True/False based on your symlink preference
         self.model_path = files_for_uform_gen2_qwen
         self.cache_model_path = None
-        if not self.model_path.exists() and os.path.exists("/stable-diffusion-cache/models/LLavacheckpoints/files_for_uform_gen2_qwen"):
+        if os.path.exists("/stable-diffusion-cache/models/LLavacheckpoints/files_for_uform_gen2_qwen"):
             self.cache_model_path = "/stable-diffusion-cache/models/LLavacheckpoints/files_for_uform_gen2_qwen"
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         try:
-            self.model = AutoModel.from_pretrained(self.model_path, trust_remote_code=True).to(self.device)
+            self.model = AutoModel.from_pretrained(self.model_path, trust_remote_code=True, torch_dtype=torch.bfloat16).to(self.device)
             self.processor = AutoProcessor.from_pretrained(self.model_path, trust_remote_code=True)
         except Exception as e:
             if self.cache_model_path is not None:
                 self.model_path = self.cache_model_path
-                self.model = AutoModel.from_pretrained(self.model_path, trust_remote_code=True).to(self.device)
+                self.model = AutoModel.from_pretrained(self.model_path, trust_remote_code=True, torch_dtype=torch.bfloat16).to(self.device)
                 self.processor = AutoProcessor.from_pretrained(self.model_path, trust_remote_code=True)
             else:
                 print(e)
@@ -2238,7 +2238,7 @@ class UformGen2QwenChat:
 
         model_inputs = {
             "input_ids": model_inputs,
-            "images": image_tensor,
+            "images": image_tensor.to(torch.bfloat16),
             "attention_mask": attention_mask
         }
 
