@@ -6,6 +6,8 @@
 
 
 from hydra import initialize_config_module
+import hydra
 
 # initialize_config_module("model/segment_anything_2/sam2_configs", version_base="1.2")
+hydra.core.global_hydra.GlobalHydra.instance().clear()
 initialize_config_module("model/segment_anything_2/sam2_configs")

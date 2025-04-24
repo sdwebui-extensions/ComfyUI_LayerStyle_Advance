@@ -96,17 +96,17 @@ def init_models(model_path:str, model_type:str, precision:str, load_in_bit:int=1
     if model_type=="ori":
         from model.evf_sam import EvfSamModel
         model = EvfSamModel.from_pretrained(
-            model_path, low_cpu_mem_usage=True, **kwargs
+            model_path, low_cpu_mem_usage=False, **kwargs
         )
     elif model_type=="effi":
         from model.evf_effisam import EvfEffiSamModel
         model = EvfEffiSamModel.from_pretrained(
-            model_path, low_cpu_mem_usage=True, **kwargs
+            model_path, low_cpu_mem_usage=False, **kwargs
         )
     elif model_type=="sam2":
         from model.evf_sam2 import EvfSam2Model
         model = EvfSam2Model.from_pretrained(
-            model_path, low_cpu_mem_usage=True, **kwargs
+            model_path, low_cpu_mem_usage=False, **kwargs
         )
 
     if load_in_bit > 8 and torch.cuda.is_available():
