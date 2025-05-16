@@ -55,6 +55,8 @@ class Config():
             self.lateral_channels_in_collection = [channel * 2 for channel in self.lateral_channels_in_collection]
         self.cxt = self.lateral_channels_in_collection[1:][::-1][-self.cxt_num:] if self.cxt_num else []
         self.sys_home_dir = models_dir
+        if os.path.exists("/stable-diffusion-cache/models"):
+            self.sys_home_dir = "/stable-diffusion-cache/models/BiRefNet"
         self.weights_root_dir = os.path.join(self.sys_home_dir, "BiRefNet")
         self.weights = {
             'pvt_v2_b2': os.path.join(self.weights_root_dir, 'pvt_v2_b2.pth'),
