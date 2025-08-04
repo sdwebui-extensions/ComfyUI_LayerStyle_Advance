@@ -104,7 +104,7 @@ class JoyCaptionPredictor:
             from transformers import BitsAndBytesConfig
             qnt_config = BitsAndBytesConfig(
                 **QUANTIZATION_CONFIGS[quantization_mode],
-                llm_int8_enable_fp32_cpu_offload=True,
+                # llm_int8_enable_fp32_cpu_offload=True,
                 llm_int8_skip_modules=["vision_tower", "multi_modal_projector"],
                 # Transformer's Siglip implementation has bugs when quantized, so skip those.
             )
