@@ -6,6 +6,7 @@ from typing import List
 from .schema import ModelType, ModelInfo
 from loguru import logger
 from pathlib import Path
+import folder_paths
 
 from .const import (
     DEFAULT_MODEL_DIR,
@@ -286,7 +287,7 @@ def scan_converted_diffusers_models(cache_dir) -> List[ModelInfo]:
 
 def scan_models() -> List[ModelInfo]:
     model_dir = os.getenv("XDG_CACHE_HOME", DEFAULT_MODEL_DIR)
-    cache_dir = '/stable-diffusion-cache/models/lama'
+    cache_dir = os.path.join(folder_paths.cache_dir, "models/lama")
     available_models = []
     available_models.extend(scan_inpaint_models(model_dir))
     available_models.extend(scan_inpaint_models(cache_dir))

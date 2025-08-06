@@ -8,6 +8,7 @@ from .base import InpaintModel
 from .ddim_sampler import DDIMSampler
 from .plms_sampler import PLMSSampler
 from ..schema import InpaintRequest, LDMSampler
+import folder_paths
 
 torch.manual_seed(42)
 import torch.nn as nn
@@ -246,13 +247,13 @@ class LDM(InpaintModel):
 
     def init_model(self, device, **kwargs):
         self.diffusion_model = load_jit_model(
-            LDM_DIFFUSION_MODEL_URL, device, LDM_DIFFUSION_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama"
+            LDM_DIFFUSION_MODEL_URL, device, LDM_DIFFUSION_MODEL_MD5, cache_dir=os.path.join(folder_paths.cache_dir, "models/lama")
         )
         self.cond_stage_model_decode = load_jit_model(
-            LDM_DECODE_MODEL_URL, device, LDM_DECODE_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama"
+            LDM_DECODE_MODEL_URL, device, LDM_DECODE_MODEL_MD5, cache_dir=os.path.join(folder_paths.cache_dir, "models/lama")
         )
         self.cond_stage_model_encode = load_jit_model(
-            LDM_ENCODE_MODEL_URL, device, LDM_ENCODE_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama"
+            LDM_ENCODE_MODEL_URL, device, LDM_ENCODE_MODEL_MD5, cache_dir=os.path.join(folder_paths.cache_dir, "models/lama")
         )
         if self.fp16 and "cuda" in str(device):
             self.diffusion_model = self.diffusion_model.half()
@@ -263,16 +264,16 @@ class LDM(InpaintModel):
 
     @staticmethod
     def download():
-        download_model(LDM_DIFFUSION_MODEL_URL, LDM_DIFFUSION_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama")
-        download_model(LDM_DECODE_MODEL_URL, LDM_DECODE_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama")
-        download_model(LDM_ENCODE_MODEL_URL, LDM_ENCODE_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama")
+        download_model(LDM_DIFFUSION_MODEL_URL, LDM_DIFFUSION_MODEL_MD5, cache_dir=os.path.join(folder_paths.cache_dir, "models/lama"))
+        download_model(LDM_DECODE_MODEL_URL, LDM_DECODE_MODEL_MD5, cache_dir=os.path.join(folder_paths.cache_dir, "models/lama"))
+        download_model(LDM_ENCODE_MODEL_URL, LDM_ENCODE_MODEL_MD5, cache_dir=os.path.join(folder_paths.cache_dir, "models/lama"))
 
     @staticmethod
     def is_downloaded() -> bool:
         model_paths = [
-            get_cache_path_by_url(LDM_DIFFUSION_MODEL_URL, cache_dir="/stable-diffusion-cache/models/lama"),
-            get_cache_path_by_url(LDM_DECODE_MODEL_URL, cache_dir="/stable-diffusion-cache/models/lama"),
-            get_cache_path_by_url(LDM_ENCODE_MODEL_URL, cache_dir="/stable-diffusion-cache/models/lama"),
+            get_cache_path_by_url(LDM_DIFFUSION_MODEL_URL, cache_dir=os.path.join(folder_paths.cache_dir, "models/lama")),
+            get_cache_path_by_url(LDM_DECODE_MODEL_URL, cache_dir=os.path.join(folder_paths.cache_dir, "models/lama")),
+            get_cache_path_by_url(LDM_ENCODE_MODEL_URL, cache_dir=os.path.join(folder_paths.cache_dir, "models/lama")),
         ]
         return all([os.path.exists(it) for it in model_paths])
 

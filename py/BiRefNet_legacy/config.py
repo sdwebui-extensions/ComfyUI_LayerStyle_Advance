@@ -1,6 +1,7 @@
 import os
 import math
 from folder_paths import models_dir
+import folder_paths
 
 
 class Config():
@@ -55,8 +56,8 @@ class Config():
             self.lateral_channels_in_collection = [channel * 2 for channel in self.lateral_channels_in_collection]
         self.cxt = self.lateral_channels_in_collection[1:][::-1][-self.cxt_num:] if self.cxt_num else []
         self.sys_home_dir = models_dir
-        if os.path.exists("/stable-diffusion-cache/models"):
-            self.sys_home_dir = "/stable-diffusion-cache/models/BiRefNet"
+        if os.path.exists(os.path.join(folder_paths.cache_dir, "models")):
+            self.sys_home_dir = os.path.join(folder_paths.cache_dir, "models")
         self.weights_root_dir = os.path.join(self.sys_home_dir, "BiRefNet")
         self.weights = {
             'pvt_v2_b2': os.path.join(self.weights_root_dir, 'pvt_v2_b2.pth'),

@@ -62,7 +62,7 @@ class LS_Load_SmolLM2_Model:
     def load_smollm2_model(self, model, dtype, device):
         repo_id = smollm2_repo[model]
         model_path = os.path.join("smol", model)
-        model_path = check_and_download_model(model_path, repo_id, cache_dir="/stable-diffusion-cache/models/smol")
+        model_path = check_and_download_model(model_path, repo_id, cache_dir=os.path.join(folder_paths.cache_dir, "models/smol"))
 
         torch_dtype = torch.bfloat16 if dtype == "bf16" else torch.float32
 
@@ -99,7 +99,7 @@ class LS_Load_SmolVLM_Model:
 
         repo_id = smolvlm_repo[model]
         model_path = os.path.join("smol", model)
-        model_path = check_and_download_model(model_path, repo_id, cache_dir="/stable-diffusion-cache/models/smol")
+        model_path = check_and_download_model(model_path, repo_id, cache_dir=os.path.join(folder_paths.cache_dir, "models/smol"))
 
         torch_dtype = torch.bfloat16 if dtype == "bf16" else torch.float32
 

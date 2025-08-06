@@ -10,6 +10,7 @@ from loguru import logger
 from ..helper import get_cache_path_by_url, load_jit_model, download_model
 from .base import InpaintModel
 from ..schema import InpaintRequest
+import folder_paths
 
 
 MANGA_INPAINTOR_MODEL_URL = os.environ.get(
@@ -36,23 +37,23 @@ class Manga(InpaintModel):
 
     def init_model(self, device, **kwargs):
         self.inpaintor_model = load_jit_model(
-            MANGA_INPAINTOR_MODEL_URL, device, MANGA_INPAINTOR_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama"
+            MANGA_INPAINTOR_MODEL_URL, device, MANGA_INPAINTOR_MODEL_MD5, cache_dir=os.path.join(folder_paths.cache_dir, "models/lama")
         )
         self.line_model = load_jit_model(
-            MANGA_LINE_MODEL_URL, device, MANGA_LINE_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama"
+            MANGA_LINE_MODEL_URL, device, MANGA_LINE_MODEL_MD5, cache_dir=os.path.join(folder_paths.cache_dir, "models/lama")
         )
         self.seed = 42
 
     @staticmethod
     def download():
-        download_model(MANGA_INPAINTOR_MODEL_URL, MANGA_INPAINTOR_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama")
-        download_model(MANGA_LINE_MODEL_URL, MANGA_LINE_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama")
+        download_model(MANGA_INPAINTOR_MODEL_URL, MANGA_INPAINTOR_MODEL_MD5, cache_dir=os.path.join(folder_paths.cache_dir, "models/lama"))
+        download_model(MANGA_LINE_MODEL_URL, MANGA_LINE_MODEL_MD5, cache_dir=os.path.join(folder_paths.cache_dir, "models/lama"))
 
     @staticmethod
     def is_downloaded() -> bool:
         model_paths = [
-            get_cache_path_by_url(MANGA_INPAINTOR_MODEL_URL, cache_dir="/stable-diffusion-cache/models/lama"),
-            get_cache_path_by_url(MANGA_LINE_MODEL_URL, cache_dir="/stable-diffusion-cache/models/lama"),
+            get_cache_path_by_url(MANGA_INPAINTOR_MODEL_URL, cache_dir=os.path.join(folder_paths.cache_dir, "models/lama")),
+            get_cache_path_by_url(MANGA_LINE_MODEL_URL, cache_dir=os.path.join(folder_paths.cache_dir, "models/lama")),
         ]
         return all([os.path.exists(it) for it in model_paths])
 

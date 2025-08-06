@@ -284,8 +284,8 @@ class LS_SAM2_ULTRA:
         # device = {"cuda": torch.device("cuda"), "cpu": torch.device("cpu")}[device]
         segmentor = 'single_image'
         if not os.path.exists(model_path):
-            if os.path.exists(os.path.join("/stable-diffusion-cache/models/sam2", sam2_model)):
-                model_path = os.path.join("/stable-diffusion-cache/models/sam2", sam2_model)
+            if os.path.exists(os.path.join(folder_paths.cache_dir, "models/sam2", sam2_model)):
+                model_path = os.path.join(folder_paths.cache_dir, "models/sam2", sam2_model)
             else:
                 log(f"{self.NODE_NAME}: Downloading SAM2 model to: {model_path}")
                 from huggingface_hub import snapshot_download
@@ -815,8 +815,8 @@ class LS_SAM2_VIDEO_ULTRA:
         dtype = {"bf16": torch.bfloat16, "fp16": torch.float16, "fp32": torch.float32}[precision]
 
         if not os.path.exists(model_path):
-            if os.path.exists(os.path.join("/stable-diffusion-cache/models/sam2", sam2_model)):
-                model_path = os.path.join("/stable-diffusion-cache/models/sam2", sam2_model)
+            if os.path.exists(os.path.join(folder_paths.cache_dir, "models/sam2", sam2_model)):
+                model_path = os.path.join(folder_paths.cache_dir, "models/sam2", sam2_model)
             else:
                 log(f"{self.NODE_NAME}: Downloading SAM2 model to: {model_path}")
                 from huggingface_hub import snapshot_download

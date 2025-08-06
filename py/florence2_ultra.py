@@ -53,8 +53,8 @@ def load_model(version):
     if not os.path.exists(model_path):
         log(f"Downloading Florence2 {version} model...")
         repo_id = fl2_model_repos[version]
-        if os.path.exists(os.path.join("/stable-diffusion-cache/models/LLM", repo_id.split('/')[-1])):
-            model_path = os.path.join("/stable-diffusion-cache/models/LLM", repo_id.split('/')[-1])
+        if os.path.exists(os.path.join(folder_paths.cache_dir, "models/LLM", repo_id.split('/')[-1])):
+            model_path = os.path.join(folder_paths.cache_dir, "models/LLM", repo_id.split('/')[-1])
         else:
             from huggingface_hub import snapshot_download
             snapshot_download(repo_id=repo_id, local_dir=model_path, ignore_patterns=["*.md", "*.txt"])

@@ -7,6 +7,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.utils.checkpoint as checkpoint
+import folder_paths
 
 from ..helper import (
     load_model,
@@ -1899,18 +1900,18 @@ class MAT(InpaintModel):
             mapping_kwargs={"torch_dtype": self.torch_dtype},
         ).to(self.torch_dtype)
         # fmt: off
-        self.model = load_model(G, MAT_MODEL_URL, device, MAT_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/inpaint")
+        self.model = load_model(G, MAT_MODEL_URL, device, MAT_MODEL_MD5, cache_dir=os.path.join(folder_paths.cache_dir, "models/inpaint"))
         self.z = torch.from_numpy(np.random.randn(1, G.z_dim)).to(self.torch_dtype).to(device)
         self.label = torch.zeros([1, self.model.c_dim], device=device).to(self.torch_dtype)
         # fmt: on
 
     @staticmethod
     def download():
-        download_model(MAT_MODEL_URL, MAT_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/inpaint")
+        download_model(MAT_MODEL_URL, MAT_MODEL_MD5, cache_dir=os.path.join(folder_paths.cache_dir, "models/inpaint"))
 
     @staticmethod
     def is_downloaded() -> bool:
-        return os.path.exists(get_cache_path_by_url(MAT_MODEL_URL, cache_dir="/stable-diffusion-cache/models/inpaint"))
+        return os.path.exists(get_cache_path_by_url(MAT_MODEL_URL, cache_dir=os.path.join(folder_paths.cache_dir, "models/inpaint")))
 
     def forward(self, image, mask, config: InpaintRequest):
         """Input images and output images have same size

@@ -79,8 +79,8 @@ class EVF_SAM_Ultra:
             pass
         if not os.path.exists(model_path):
             model_path = os.path.join(folder_paths.models_dir, model_folder_name, model)
-        if not os.path.exists(os.path.join(model_path, 'special_tokens_map.json')) and os.path.exists("/stable-diffusion-cache/models/EVF-SAM"):
-            model_path = os.path.join("/stable-diffusion-cache/models/EVF-SAM", model)
+        if not os.path.exists(os.path.join(model_path, 'special_tokens_map.json')) and os.path.exists(os.path.join(folder_paths.cache_dir, "models/EVF-SAM")):
+            model_path = os.path.join(folder_paths.cache_dir, "models/EVF-SAM", model)
 
         for i in image:
             i = torch.unsqueeze(i, 0)

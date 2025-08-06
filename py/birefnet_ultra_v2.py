@@ -79,8 +79,8 @@ class LS_LoadBiRefNetModelV2:
 
     def load_birefnet_model(self, version):
         birefnet_path = os.path.join(folder_paths.models_dir, 'BiRefNet')
-        if os.path.exists("/stable-diffusion-cache/models/BiRefNet"):
-            birefnet_path = "/stable-diffusion-cache/models/BiRefNet"
+        if os.path.exists(os.path.join(folder_paths.cache_dir, "models/BiRefNet")):
+            birefnet_path = os.path.join(folder_paths.cache_dir, "models/BiRefNet")
         os.makedirs(birefnet_path, exist_ok=True)
 
         model_path = os.path.join(birefnet_path, version)

@@ -12,6 +12,7 @@ from ..helper import (
 )
 from ..schema import InpaintRequest
 from .base import InpaintModel
+import folder_paths
 
 LAMA_MODEL_URL = os.environ.get(
     "LAMA_MODEL_URL",
@@ -27,14 +28,14 @@ class LaMa(InpaintModel):
 
     @staticmethod
     def download():
-        download_model(LAMA_MODEL_URL, LAMA_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama")
+        download_model(LAMA_MODEL_URL, LAMA_MODEL_MD5, cache_dir=os.path.join(folder_paths.cache_dir, "models/lama"))
 
     def init_model(self, device, **kwargs):
-        self.model = load_jit_model(LAMA_MODEL_URL, device, LAMA_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama").eval()
+        self.model = load_jit_model(LAMA_MODEL_URL, device, LAMA_MODEL_MD5, cache_dir=os.path.join(folder_paths.cache_dir, "models/lama")).eval()
 
     @staticmethod
     def is_downloaded() -> bool:
-        return os.path.exists(get_cache_path_by_url(LAMA_MODEL_URL, cache_dir="/stable-diffusion-cache/models/lama"))
+        return os.path.exists(get_cache_path_by_url(LAMA_MODEL_URL, cache_dir=os.path.join(folder_paths.cache_dir, "models/lama")))
 
     def forward(self, image, mask, config: InpaintRequest):
         """Input image and output image have same size

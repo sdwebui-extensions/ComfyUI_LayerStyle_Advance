@@ -90,8 +90,8 @@ def load_pickle(file_name:str) -> object:
 def load_light_leak_images() -> list:
     file = os.path.join(folder_paths.models_dir, "layerstyle", "light_leak.pkl")
     if not os.path.exists(file):
-        if os.path.exists("/stable-diffusion-cache/models/layerstyle/light_leak.pkl"):
-            file = "/stable-diffusion-cache/models/layerstyle/light_leak.pkl"
+        if os.path.exists(os.path.join(folder_paths.cache_dir, "models/layerstyle/light_leak.pkl")):
+            file = os.path.join(folder_paths.cache_dir, "models/layerstyle/light_leak.pkl")
     return load_pickle(file)
 
 def check_and_download_model(model_path, repo_id, cache_dir=None):
@@ -1491,8 +1491,8 @@ def load_RMBG_model():
         model_path = os.path.join(folder_paths.models_dir, "rmbg", "RMBG-1.4", "model.pth")
     if not os.path.exists(model_path):
         model_path = os.path.join(os.path.dirname(current_directory), "RMBG-1.4", "model.pth")
-    if not os.path.exists(model_path) and os.path.exists('/stable-diffusion-cache/models/RMBG-1.4'):
-        model_path = "/stable-diffusion-cache/models/RMBG-1.4/model.pth"
+    if not os.path.exists(model_path) and os.path.exists(os.path.join(folder_paths.cache_dir, "models/RMBG-1.4/model.pth")):
+        model_path = os.path.join(folder_paths.cache_dir, "models/RMBG-1.4/model.pth")
     net.load_state_dict(torch.load(model_path, map_location=device, weights_only=True))
     net.to(device)
     net.eval()
@@ -1559,7 +1559,7 @@ def load_VITMatte_model(model_name:str, local_files_only:bool=False) -> object:
     if not os.path.exists(model_name):
         model_name = "vitmatte"
         model_repo = "hustvl/vitmatte-small-composition-1k"
-        model_path  = check_and_download_model(model_name, model_repo, cache_dir="/stable-diffusion-cache/models")
+        model_path  = check_and_download_model(model_name, model_repo, cache_dir=os.path.join(folder_paths.cache_dir, "models"))
     else:
         model_path = model_name
     from transformers import VitMatteImageProcessor, VitMatteForImageMatting
@@ -1585,8 +1585,8 @@ def generate_VITMatte(image:Image, trimap:Image, local_files_only:bool=False, de
         trimap = trimap.resize((target_width, target_height), Image.BILINEAR)
         # log(f"vitmatte image size {width}x{height} too large, resize to {target_width}x{target_height} for processing.")
     model_name = "hustvl/vitmatte-small-composition-1k"
-    if os.path.exists('/stable-diffusion-cache/models/vitmatte'):
-        model_name = '/stable-diffusion-cache/models/vitmatte'
+    if os.path.exists(os.path.join(folder_paths.cache_dir, "models/vitmatte")):
+        model_name = os.path.join(folder_paths.cache_dir, "models/vitmatte")
     if device=="cpu":
         device = torch.device('cpu')
     else:
@@ -1645,8 +1645,8 @@ def get_a_person_mask_generator_model_path() -> str:
         model_file_path = os.path.join(folder_paths.models_dir, model_folder_name, model_name)
 
     if not os.path.exists(model_file_path):
-        if os.path.exists("/stable-diffusion-cache/models/mediapipe"):
-            return "/stable-diffusion-cache/models/mediapipe/selfie_multiclass_256x256.tflite"
+        if os.path.exists(os.path.join(folder_paths.cache_dir, "models/mediapipe/selfie_multiclass_256x256.tflite")):
+            return os.path.join(folder_paths.cache_dir, "models/mediapipe/selfie_multiclass_256x256.tflite")
         import wget
         model_url = f'https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_multiclass_256x256/float32/latest/{model_name}'
         log(f"Downloading '{model_name}' model")
@@ -2193,8 +2193,8 @@ class UformGen2QwenChat:
         #                                     local_dir_use_symlinks="auto") # or set to True/False based on your symlink preference
         self.model_path = files_for_uform_gen2_qwen
         self.cache_model_path = None
-        if os.path.exists("/stable-diffusion-cache/models/LLavacheckpoints/files_for_uform_gen2_qwen"):
-            self.cache_model_path = "/stable-diffusion-cache/models/LLavacheckpoints/files_for_uform_gen2_qwen"
+        if os.path.exists(os.path.join(folder_paths.cache_dir, "models/LLavacheckpoints/files_for_uform_gen2_qwen")):
+            self.cache_model_path = os.path.join(folder_paths.cache_dir, "models/LLavacheckpoints/files_for_uform_gen2_qwen")
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         try:
             self.model = AutoModel.from_pretrained(self.model_path, trust_remote_code=True, torch_dtype=torch.bfloat16).to(self.device)
@@ -2273,7 +2273,7 @@ class AnyType(str):
 
 def download_hg_model(model_id:str,exDir:str='') -> str:
     # 下载本地
-    cache_dir = os.path.join("/stable-diffusion-cache/models", exDir)
+    cache_dir = os.path.join(folder_paths.cache_dir, "models", exDir)
     model_checkpoint = os.path.join(folder_paths.models_dir, exDir, os.path.basename(model_id))
     cache_model_checkpoint = os.path.join(cache_dir, os.path.basename(model_id))
     if not os.path.exists(model_checkpoint):
@@ -2292,8 +2292,8 @@ def get_files(model_path: str, file_ext_list:list) -> dict:
     file_list = []
     for ext in file_ext_list:
         file_list.extend(glob.glob(os.path.join(model_path, '*' + ext)))
-        if os.path.exists('/stable-diffusion-cache/models/'+model_path.split('/')[-1]):
-            file_list.extend(glob.glob(os.path.join('/stable-diffusion-cache/models/'+model_path.split('/')[-1], '*' + ext)))
+        if os.path.exists(os.path.join(folder_paths.cache_dir, "models", model_path.split('/')[-1])):
+            file_list.extend(glob.glob(os.path.join(folder_paths.cache_dir, "models", model_path.split('/')[-1], '*' + ext)))
     files_dict = {}
     for i in range(len(file_list)):
         _, filename = os.path.split(file_list[i])

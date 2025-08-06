@@ -14,6 +14,7 @@ from .utils import (
 )
 from ..schema import InpaintRequest, ModelType
 import os
+import folder_paths
 
 
 class SD(DiffusionInpaintModel):
@@ -112,7 +113,7 @@ class SD(DiffusionInpaintModel):
 
 class SD15(SD):
     name = "runwayml/stable-diffusion-inpainting"
-    model_id_or_path = "/stable-diffusion-cache/models/stable-diffusion-inpainting" if os.path.exists("/stable-diffusion-cache/models/stable-diffusion-inpainting") else "runwayml/stable-diffusion-inpainting"
+    model_id_or_path = os.path.join(folder_paths.cache_dir, "models/stable-diffusion-inpainting") if os.path.exists(os.path.join(folder_paths.cache_dir, "models/stable-diffusion-inpainting")) else "runwayml/stable-diffusion-inpainting"
 
 
 class Anything4(SD):

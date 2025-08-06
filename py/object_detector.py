@@ -272,7 +272,7 @@ class LS_OBJECT_DETECTOR_YOLO8:
         from  ultralytics import YOLO
         model_path = os.path.join(folder_paths.models_dir, 'yolo', yolo_model)
         if not os.path.exists(model_path):
-            model_path = os.path.join('/stable-diffusion-cache/models/yolo', yolo_model)
+            model_path = os.path.join(folder_paths.cache_dir, 'models/yolo', yolo_model)
         yolo_model = YOLO(model_path)
 
         ret_bboxes = []
@@ -311,8 +311,8 @@ class LS_OBJECT_DETECTOR_YOLOWORLD:
         self.NODE_NAME = 'Object Detector YOLO-WORLD'
         self.model_path = os.path.join(folder_paths.models_dir, 'yolo-world')
         os.environ['MODEL_CACHE_DIR'] = self.model_path
-        if not os.path.exists(self.model_path) and os.path.exists("/stable-diffusion-cache/models/yolo_world"):
-            os.environ['MODEL_CACHE_DIR'] = "/stable-diffusion-cache/models/yolo_world"
+        if not os.path.exists(self.model_path) and os.path.exists(os.path.join(folder_paths.cache_dir, "models/yolo_world")):
+            os.environ['MODEL_CACHE_DIR'] = os.path.join(folder_paths.cache_dir, "models/yolo_world")
 
     @classmethod
     def INPUT_TYPES(cls):

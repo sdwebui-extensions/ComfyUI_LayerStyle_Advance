@@ -35,6 +35,8 @@ from .utils import (
     downsample2d,
 )
 
+import folder_paths
+
 
 def upfirdn2d(x, f, up=1, down=1, padding=0, flip_filter=False, gain=1, impl="cuda"):
     assert isinstance(x, torch.Tensor)
@@ -1653,16 +1655,16 @@ class FcF(InpaintModel):
             encoder_kwargs=kwargs,
             mapping_kwargs={"num_layers": 2},
         )
-        self.model = load_model(G, FCF_MODEL_URL, device, FCF_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama")
+        self.model = load_model(G, FCF_MODEL_URL, device, FCF_MODEL_MD5, cache_dir=os.path.join(folder_paths.cache_dir, "models/lama"))
         self.label = torch.zeros([1, self.model.c_dim], device=device)
 
     @staticmethod
     def download():
-        download_model(FCF_MODEL_URL, FCF_MODEL_MD5, cache_dir="/stable-diffusion-cache/models/lama")
+        download_model(FCF_MODEL_URL, FCF_MODEL_MD5, cache_dir=os.path.join(folder_paths.cache_dir, "models/lama"))
 
     @staticmethod
     def is_downloaded() -> bool:
-        return os.path.exists(get_cache_path_by_url(FCF_MODEL_URL, cache_dir="/stable-diffusion-cache/models/lama"))
+        return os.path.exists(get_cache_path_by_url(FCF_MODEL_URL, cache_dir=os.path.join(folder_paths.cache_dir, "models/lama")))
 
     @torch.no_grad()
     def __call__(self, image, mask, config: InpaintRequest):
