@@ -144,6 +144,7 @@ Please try downgrading the ```protobuf``` dependency package to 3.20.3, or set e
 
 **If the dependency package error after updating,  please double clicking ```repair_dependency.bat``` (for Official ComfyUI Protable) or  ```repair_dependency_aki.bat``` (for ComfyUI-aki-v1.x) in the plugin folder to reinstall the dependency packages.    
 
+* Commit [JimengImageToImageAPI](#JimengImageToImageAPI) node, edit images using the Instant Dreaming Image 3.0 API. Create an account on [Volcano Engine](#https://console.volcengine.com/iam/keymanage) and apply for API AccessKeyID and SecretAccessKey. Fill them into the ```api_key.ini``` directory in the plugin directory.
 * Commit [SAM2UltraV2](SAM2UltraV2) and [LoadSAM2Model](LoadSAM2Model) nodes, Change the SAM model to an external input to save resources when using multiple nodes.
 * Commit [JoyCaptionBetaOne](JoyCaptionBetaOne), [LoadJoyCaptionBeta1Model](LoadJoyCaptionBeta1Model), [JoyCaptionBeta1ExtraOptions](JoyCaptionBeta1ExtraOptions) nodes, Generate prompt words using the JoyCaption Beta One model.    
 * Commit [SaveImagePLusV2](SaveImagePlusV2) node, add custom file names and setting up the dpi of image.
@@ -494,7 +495,7 @@ Outputs:
 * text: Output text of GLM4.
 * history: History of GLM4 conversations.
 
-### <a id="table1">ZhipuGLM4</a>
+### <a id="table1">ZhipuGLM4V</a>
 Use the Zhipu API for visual inference.
 Apply for an API key for free at [https://bigmodel.cn/usercenter/proj-mgmt/apikeys](https://bigmodel.cn/usercenter/proj-mgmt/apikeys), And fill it in ```api_key.ini```, this file is located in the root directory of the plug-in, and the default name is ```api_key.ini.example```. to use this file for the first time, you need to change the file suffix to ```.ini```. Open it using text editing software, fill in your API key after ```zhipu_api_key=``` and save it.
 
@@ -563,6 +564,20 @@ Node Options:
 * dtype: The model accuracy has two options: bf16 and fp32.
 * device: The model loading device has two options: cuda or cpu.
 
+### <a id="table1">JimengImageToImageAPI</a>
+Edit images using the Jimeng API.
+Please create an account on [Volcano Engine](#https://console.volcengine.com/iam/keymanage), apply for API AccessKeyID and SecretAccessKey, and fill them in ```api_key. ini```. This file is located in the root directory of the plugin and its default name is ```api_key.ini.example```. When using this file for the first time, you need to change the file extension to '.ini'. Open with text editing software and fill in the corresponding values after ```volcengine_SecretAccessKey=``` and ```volcengine_SecretAccessKey=```.
+![image](image/jimeng_image_to_image_api_example.jpg)    
+
+Node Options:   
+![image](image/jimeng_image_to_image_api_node.jpg)    
+
+* image: The input image.
+* model: Choose the DreamMap and Life Map model. Currently, only the Jimeng_i2i-v30 model is supported.
+* time_out: The maximum time limit for waiting for API return, in seconds. If this time is exceeded, the node will end running.
+* scale: The scale parameter of jimeng_i2iuv30 is set to 0.5 by default.
+* seed: The seed value.
+* prompt: The prompt.
 
 ### <a id="table1">UserPromptGeneratorTxtImg</a>
 

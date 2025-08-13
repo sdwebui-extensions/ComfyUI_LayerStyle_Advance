@@ -121,6 +121,7 @@ If this call came from a _pb2.py file, your generated code is out of date and mu
 ## 更新说明
 **如果本插件更新后出现依赖包错误，请双击运行插件目录下的```install_requirements.bat```(官方便携包)，或 ```install_requirements_aki.bat```(秋叶整合包) 重新安装依赖包。
 
+* 添加 [JimengImageToImageAPI](#JimengImageToImageAPI) 节点，使用即梦图生图3.0API对图片进行编辑。在[火山引擎](#https://console.volcengine.com/iam/keymanage) 创建账号，并申请API AccessKeyID 和 SecretAccessKey，将其填入插件目录下的```api_key.ini```。
 * 添加 [SAM2UltraV2](SAM2UltraV2) 和 [LoadSAM2Model](LoadSAM2Model) 节点，将SAM模型改为外部输入，在使用多个节点时节省资源。
 * 添加 [JoyCaptionBetaOne](JoyCaptionBetaOne), [LoadJoyCaptionBeta1Model](LoadJoyCaptionBeta1Model), [JoyCaptionBeta1ExtraOptions](JoyCaptionBeta1ExtraOptions) 节点，使用JoyCaption-Beta-One模型生成提示词。
 * 添加 [SaveImagePLusV2](SaveImagePlusV2) 节点，增加自定义文件名和设置dpi。
@@ -474,7 +475,7 @@ JoyCaption Beta One的extra_options参数节点。
 * text: GLM4的输出。
 * history: GLM4对话历史记录。
 
-### <a id="table1">ZhipuGLM4</a>
+### <a id="table1">ZhipuGLM4V</a>
 使用智谱API进行视觉推理。        
 在[https://bigmodel.cn/usercenter/proj-mgmt/apikeys](https://bigmodel.cn/usercenter/proj-mgmt/apikeys)免费申请API Key，并将其填到```api_key.ini```, 这个文件位于插件根目录下, 默认名字是```api_key.ini.example```, 初次使用这个文件需将文件后缀改为.ini。用文本编辑软件打开，在```zhipu_api_key=```后面填入你的API key并保存。
 
@@ -539,6 +540,20 @@ JoyCaption Beta One的extra_options参数节点。
 * dtype: 模型精度，有bf16和fp32两个选项。
 * device: 模型加载设备，有cuda和cpu两个选项。
 
+### <a id="table1">JimengImageToImageAPI</a>
+使用即梦图生图3.0API对图片进行编辑。
+请在[火山引擎](#https://console.volcengine.com/iam/keymanage) 创建账号，并申请API AccessKeyID 和 SecretAccessKey，并将其填到```api_key.ini```。 这个文件位于插件根目录下, 默认名字是```api_key.ini.example```, 初次使用这个文件需将文件后缀改为.ini。用文本编辑软件打开，在```volcengine_AccessKeyId=``` 和 ```volcengine_SecretAccessKey=```后面填入对应的值。
+![image](image/jimeng_image_to_image_api_example.jpg)    
+
+节点选项说明:   
+![image](image/jimeng_image_to_image_api_node.jpg)    
+
+* image: 图片输入。
+* model: 选择即梦图生图模型。目前仅支持 jimeng_i2i_v30 模型。
+* time_out: 等待API返回的时间上限，单位为秒，超出此时间将结束节点运行。
+* scale: jimeng_i2i_v30的scale参数，默认为0.5。
+* seed: 种子值。
+* prompt: 提示词。
 
 ### <a id="table1">UserPromptGeneratorTxtImg</a>
 用于生成SD文本到图片提示词的UserPrompt预设。
