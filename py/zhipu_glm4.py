@@ -17,7 +17,11 @@ class LS_ZhipuImage:
 
     @classmethod
     def INPUT_TYPES(cls):
-        glm_model_list = ["glm-4v-flash", "glm-4v", "glm-4v-plus"]
+        glm_model_list = ["glm-4.5v",
+                          "glm-4.1v-thinking-flashx",
+                          "glm-4v-flash",
+                          "glm-4v",
+                          "glm-4v-plus"]
         return {"required":{
                     "image": ("IMAGE",),
                     "model": (glm_model_list,),
