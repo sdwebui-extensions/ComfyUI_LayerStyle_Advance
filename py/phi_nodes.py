@@ -150,6 +150,8 @@ class LS_Phi_Prompt:
     def load_phi_model(self, model, device, dtype):
         phi_model =LS_PhiModel(model, device, dtype)
         model_dir = os.path.join(model_path, model)
+        if os.path.exists(folder_paths.cache_dir):
+            model_dir = os.path.join(folder_paths.cache_dir, "models/LLM", model)
         if dtype == 'fp16':
             torch_dtype = torch.float16
         elif dtype == 'bf16':
