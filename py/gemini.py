@@ -392,6 +392,7 @@ class LS_Gemini_Image_Edit:
     def INPUT_TYPES(self):
         gemini_model_list = [
             "gemini-2.0-flash-exp-image-generation",
+            "gemini-2.5-flash-image-preview"
         ]
 
         return {
@@ -465,7 +466,7 @@ class LS_Gemini_Image_Edit:
             )
 
             for item in response.candidates[0].content.parts:
-                if hasattr(item, "inline_data") and item.inline_data.mime_type == "image/png":
+                if hasattr(item, "inline_data") and item.inline_data is not None and item.inline_data.mime_type == "image/png":
                     image_bytes = item.inline_data.data
                     image_bytes = io.BytesIO(image_bytes)
                     image_bytes.seek(0)
