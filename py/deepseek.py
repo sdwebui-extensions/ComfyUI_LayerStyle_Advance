@@ -2,7 +2,6 @@ import base64
 import io
 import json
 import requests
-from openai import base_url
 
 from .imagefunc import *
 
