@@ -32,14 +32,15 @@ fl2_model_repos = {
     "Florence-2-Flux-Large":"gokaygokay/Florence-2-Flux-Large"
 }
 
-def fixed_get_imports(filename) -> list[str]:
-    """Workaround for FlashAttention"""
-    if os.path.basename(filename) != "modeling_florence2.py":
-        return get_imports(filename)
-    imports = get_imports(filename)
+def fixed_get_imports(filename: str | os.PathLike) -> list[str]:
+    imports = []
     try:
+        if not str(filename).endswith("modeling_florence2.py"):
+            return get_imports(filename)
+        imports = get_imports(filename)
         imports.remove("flash_attn")
     except:
+        print(f"No flash_attn import to remove")
         pass
     return imports
 
@@ -60,15 +61,22 @@ def load_model(version):
             snapshot_download(repo_id=repo_id, local_dir=model_path, ignore_patterns=["*.md", "*.txt"])
 
     try:
-        with patch("transformers.dynamic_module_utils.get_imports", fixed_get_imports):
-            # model = AutoModelForCausalLM.from_pretrained(model_path, trust_remote_code=True)
-            model = AutoModelForCausalLM.from_pretrained(model_path, attn_implementation=attention, device_map=device,
-                                                         torch_dtype=torch.float32, trust_remote_code=True)
-            processor = AutoProcessor.from_pretrained(model_path, trust_remote_code=True)
+        import transformers
+        if transformers.__version__ < '4.51.0':
+            with patch("transformers.dynamic_module_utils.get_imports", fixed_get_imports): #workaround for unnecessary flash_attn requirement
+                 model = AutoModelForCausalLM.from_pretrained(model_path, attn_implementation=attention, torch_dtype=torch.float32,trust_remote_code=True, device_map=device)
+        else:
+            from .modeling_florence2 import Florence2ForConditionalGeneration
+            model = Florence2ForConditionalGeneration.from_pretrained(model_path, attn_implementation=attention, torch_dtype=torch.float32, device_map=device)
+        processor = AutoProcessor.from_pretrained(model_path, trust_remote_code=True)
     except Exception as e:
         try:
-            model = AutoModelForCausalLM.from_pretrained(model_path, attn_implementation=attention, device_map=device,
-                                                         torch_dtype=torch.float32, trust_remote_code=True)
+            if transformers.__version__ < '4.51.0':
+                with patch("transformers.dynamic_module_utils.get_imports", fixed_get_imports): #workaround for unnecessary flash_attn requirement
+                    model = AutoModelForCausalLM.from_pretrained(model_path, attn_implementation=attention, torch_dtype=torch.float32,trust_remote_code=True, device_map=device)
+            else:
+                from .modeling_florence2 import Florence2ForConditionalGeneration
+                model = Florence2ForConditionalGeneration.from_pretrained(model_path, attn_implementation=attention, torch_dtype=torch.float32, device_map=device)
             processor = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
         except Exception as e:
             sys.path.append(model_path)
@@ -222,6 +230,7 @@ def run_example(model, processor, task_prompt, image, max_new_tokens, num_beams,
         early_stopping=False,
         do_sample=do_sample,
         num_beams=num_beams,
+        use_cache=False,
     )
     generated_text = processor.batch_decode(generated_ids, skip_special_tokens=False)[0]
     parsed_answer = processor.post_process_generation(
