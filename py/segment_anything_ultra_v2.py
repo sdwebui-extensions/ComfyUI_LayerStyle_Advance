@@ -2,6 +2,7 @@
 
 from .imagefunc import *
 from .segment_anything_func import *
+from dist_utils import args, tensor_chunk
 
 NODE_NAME = 'SegmentAnythingUltra V2'
 
@@ -69,6 +70,9 @@ class SegmentAnythingUltraV2:
         # DINO_MODEL = load_groundingdino_model(grounding_dino_model)
         ret_images = []
         ret_masks = []
+        bs, height, width, _ = image.size()
+        if args.world_size > 1 and bs > args.world_size:
+            image = tensor_chunk(image, 0)[args.rank]
 
         for i in image:
             i = torch.unsqueeze(i, 0)
@@ -76,28 +80,45 @@ class SegmentAnythingUltraV2:
             _image = tensor2pil(i).convert('RGBA')
             boxes = groundingdino_predict(self.DINO_MODEL, _image, prompt, threshold)
             if boxes.shape[0] == 0:
-                break
-            (_, _mask) = sam_segment(self.SAM_MODEL, _image, boxes)
-            _mask = _mask[0]
-            detail_range = detail_erode + detail_dilate
-            if process_detail:
-                if detail_method == 'GuidedFilter':
-                    _mask = guided_filter_alpha(i, _mask, detail_range // 6 + 1)
-                    _mask = tensor2pil(histogram_remap(_mask, black_point, white_point))
-                elif detail_method == 'PyMatting':
-                    _mask = tensor2pil(mask_edge_detail(i, _mask, detail_range // 8 + 1, black_point, white_point))
-                else:
-                    _trimap = generate_VITMatte_trimap(_mask, detail_erode, detail_dilate)
-                    _mask = generate_VITMatte(_image, _trimap, local_files_only=local_files_only, device=device, max_megapixels=max_megapixels)
-                    _mask = tensor2pil(histogram_remap(pil2tensor(_mask), black_point, white_point))
+                empty_mask = torch.zeros((1, height, width), dtype=torch.uint8, device="cpu")
+                ret_masks.append(empty_mask)
+                _image = RGB2RGBA(tensor2pil(i).convert('RGB'), _mask.convert('L'))
+                ret_images.append(pil2tensor(_image))
             else:
-                _mask = mask2image(_mask)
-            _image = RGB2RGBA(tensor2pil(i).convert('RGB'), _mask.convert('L'))
+                (_, _mask) = sam_segment(self.SAM_MODEL, _image, boxes)
+                _mask = _mask[0]
+                detail_range = detail_erode + detail_dilate
+                if process_detail:
+                    if detail_method == 'GuidedFilter':
+                        _mask = guided_filter_alpha(i, _mask, detail_range // 6 + 1)
+                        _mask = tensor2pil(histogram_remap(_mask, black_point, white_point))
+                    elif detail_method == 'PyMatting':
+                        _mask = tensor2pil(mask_edge_detail(i, _mask, detail_range // 8 + 1, black_point, white_point))
+                    else:
+                        _trimap = generate_VITMatte_trimap(_mask, detail_erode, detail_dilate)
+                        _mask = generate_VITMatte(_image, _trimap, local_files_only=local_files_only, device=device, max_megapixels=max_megapixels)
+                        _mask = tensor2pil(histogram_remap(pil2tensor(_mask), black_point, white_point))
+                else:
+                    _mask = mask2image(_mask)
+                _image = RGB2RGBA(tensor2pil(i).convert('RGB'), _mask.convert('L'))
 
-            ret_images.append(pil2tensor(_image))
-            ret_masks.append(image2mask(_mask))
+                ret_images.append(pil2tensor(_image))
+                ret_masks.append(image2mask(_mask))
+        if args.world_size > 1 and bs > args.world_size:
+            ret_images = torch.cat(ret_images, dim=0)
+            ret_masks = torch.cat(ret_masks, dim=0)
+            torch.save(ret_images, f"ret_images_{args.rank}.pth")
+            torch.save(ret_masks, f"ret_masks_{args.rank}.pth")
+            ret_images = []
+            ret_masks = []
+            torch.distributed.barrier()
+            for i in range(args.world_size):
+                ret_images.append(torch.load(f"ret_images_{i}.pth"))
+                ret_masks.append(torch.load(f"ret_masks_{i}.pth"))
+            torch.distributed.barrier()
+            os.remove(f"ret_images_{args.rank}.pth")
+            os.remove(f"ret_masks_{args.rank}.pth")
         if len(ret_masks) == 0:
-            _, height, width, _ = image.size()
             empty_mask = torch.zeros((1, height, width), dtype=torch.uint8, device="cpu")
             return (empty_mask, empty_mask)
 
