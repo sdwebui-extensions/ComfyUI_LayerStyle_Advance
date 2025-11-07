@@ -25,6 +25,13 @@ class YoloV8Detect:
                 "mask_merge": (mask_merge,),
             },
             "optional": {
+                "conf": ("FLOAT", {"default": 0.25, "min": 0.0, "max": 1.0, "step": 0.01}),
+                "iou": ("FLOAT", {"default": 0.45, "min": 0.0, "max": 1.0, "step": 0.01}),
+                "classes": ("STRING", {"default": "", "multiline": False}),
+                "device": ("STRING", {"default": "auto"}),
+                "max_det": ("INT", {"default": 300, "min": 1, "max": 1000, "step": 1}),
+                "retina_masks": ("BOOLEAN", {"default": True}),
+                "agnostic_nms": ("BOOLEAN", {"default": False}),
             }
         }
 
@@ -34,7 +41,9 @@ class YoloV8Detect:
     CATEGORY = '😺dzNodes/LayerMask'
 
     def yolo_detect(self, image,
-                          yolo_model, mask_merge
+                          yolo_model, mask_merge,
+                          conf=0.25, iou=0.45, classes="", device="auto", 
+                          max_det=300, retina_masks=True, agnostic_nms=False
                       ):
 
         ret_masks = []
@@ -43,11 +52,46 @@ class YoloV8Detect:
 
         from  ultralytics import YOLO
         yolo_model = YOLO(os.path.join(model_path, yolo_model))
+        
+        # Parse classes parameter
+        classes_list = None
+        if classes and classes.strip():
+            try:
+                # Support comma-separated list of class IDs or ranges
+                classes_list = []
+                for item in classes.strip().split(','):
+                    item = item.strip()
+                    if '-' in item:  # Support range like "0-5"
+                        start, end = map(int, item.split('-'))
+                        classes_list.extend(range(start, end + 1))
+                    else:
+                        classes_list.append(int(item))
+            except ValueError:
+                log(f"{self.NODE_NAME} Invalid classes format: {classes}, ignoring.", message_type='warning')
+                classes_list = None
+        
+        # Determine device
+        if device == "auto":
+            if torch.cuda.is_available():
+                device = "cuda"
+            elif hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
+                device = "mps"
+            else:
+                device = "cpu"
+        
+        log(f"{self.NODE_NAME} Using device: {device}, conf: {conf}, iou: {iou}, max_det: {max_det}")
 
         for i in image:
             i = torch.unsqueeze(i, 0)
             _image = tensor2pil(i)
-            results = yolo_model(_image, retina_masks=True)
+            results = yolo_model(_image, 
+                               conf=conf, 
+                               iou=iou, 
+                               classes=classes_list,
+                               device=device,
+                               max_det=max_det,
+                               retina_masks=retina_masks,
+                               agnostic_nms=agnostic_nms)
             for result in results:
                 yolo_plot_image = cv2.cvtColor(result.plot(), cv2.COLOR_BGR2RGB)
                 ret_yolo_plot_images.append(pil2tensor(Image.fromarray(yolo_plot_image)))
