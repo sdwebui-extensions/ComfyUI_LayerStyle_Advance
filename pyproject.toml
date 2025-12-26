@@ -1,5 +1,5 @@
 [project]
-name = "comfyui_layerstyle_advance"
+name = "ComfyUI_LayerStyle_Advance"
 description = "The nodes detached from ComfyUI Layer Style are mainly those with complex requirements for dependency packages."
 version = "2.0.32"
 license = { text = "MIT License" }
