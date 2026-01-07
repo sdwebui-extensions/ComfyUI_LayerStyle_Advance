@@ -35,6 +35,7 @@ from colorsys import rgb_to_hsv
 import folder_paths
 import comfy.model_management
 from .blendmodes import *
+import shutil
 
 def log(message:str, message_type:str='info'):
     name = 'LayerStyle'
