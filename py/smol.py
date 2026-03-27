@@ -4,7 +4,6 @@ import torch
 import re
 import folder_paths
 from PIL import Image
-from transformers import AutoProcessor, AutoModelForVision2Seq, AutoTokenizer, AutoModelForCausalLM
 from .imagefunc import log, check_and_download_model, tensor2pil
 
 
@@ -60,6 +59,7 @@ class LS_Load_SmolLM2_Model:
     CATEGORY = '😺dzNodes/LayerUtility'
 
     def load_smollm2_model(self, model, dtype, device):
+        from transformers import AutoTokenizer, AutoModelForCausalLM
         repo_id = smollm2_repo[model]
         model_path = os.path.join("smol", model)
         model_path = check_and_download_model(model_path, repo_id, cache_dir=os.path.join(folder_paths.cache_dir, "models/smol"))
@@ -96,6 +96,11 @@ class LS_Load_SmolVLM_Model:
     CATEGORY = '😺dzNodes/LayerUtility'
 
     def load_smolvlm_model(self, model, dtype, device):
+        from transformers import AutoProcessor
+        try:
+            from transformers import AutoModelForVision2Seq
+        except ImportError:
+            from transformers import AutoModelForImageTextToText as AutoModelForVision2Seq
 
         repo_id = smolvlm_repo[model]
         model_path = os.path.join("smol", model)

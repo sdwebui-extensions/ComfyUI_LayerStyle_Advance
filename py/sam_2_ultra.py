@@ -230,7 +230,7 @@ class LS_SAM2_ULTRA:
                            ]
         model_precision_list = [ 'fp16','bf16','fp32']
         select_list = ["all", "first", "by_index"]
-        method_list = ['VITMatte', 'VITMatte(local)', 'PyMatting', 'GuidedFilter', ]
+        method_list = ['VITMatte', 'VITMatte(local)', 'vitmatte-base-composition-1k', 'PyMatting', 'GuidedFilter', ]
         device_list = ['cuda','cpu']
         return {
             "required": {
@@ -422,7 +422,7 @@ class LS_SAM2_ULTRA:
                 else:
                     _trimap = generate_VITMatte_trimap(_mask, detail_erode, detail_dilate)
                     _mask = generate_VITMatte(orig_image, _trimap, local_files_only=local_files_only, device=device,
-                                              max_megapixels=max_megapixels)
+                                              max_megapixels=max_megapixels, method=detail_method)
                     _mask = tensor2pil(histogram_remap(pil2tensor(_mask), black_point, white_point))
             else:
                 _mask = tensor2pil(_mask)
@@ -555,7 +555,7 @@ class LS_SAM2_ULTRA_V2:
 
         model_precision_list = [ 'fp16','bf16','fp32']
         select_list = ["all", "first", "by_index"]
-        method_list = ['VITMatte', 'VITMatte(local)', 'PyMatting', 'GuidedFilter', ]
+        method_list = ['VITMatte', 'VITMatte(local)', 'vitmatte-base-composition-1k', 'PyMatting', 'GuidedFilter', ]
         device_list = ['cuda','cpu']
         return {
             "required": {
@@ -692,7 +692,7 @@ class LS_SAM2_ULTRA_V2:
                 else:
                     _trimap = generate_VITMatte_trimap(_mask, detail_erode, detail_dilate)
                     _mask = generate_VITMatte(orig_image, _trimap, local_files_only=local_files_only, device=device,
-                                              max_megapixels=max_megapixels)
+                                              max_megapixels=max_megapixels, method=detail_method)
                     _mask = tensor2pil(histogram_remap(pil2tensor(_mask), black_point, white_point))
             else:
                 _mask = tensor2pil(_mask)
@@ -754,7 +754,7 @@ class LS_SAM2_VIDEO_ULTRA:
                            'sam2.1_hiera_tiny.safetensors',
                            ]
         model_precision_list = ['fp16','bf16']
-        method_list = ['VITMatte']
+        method_list = ['VITMatte', 'vitmatte-base-composition-1k', ]
         device_list = ['cuda']
         return {
             "required": {
@@ -1035,7 +1035,7 @@ class LS_SAM2_VIDEO_ULTRA:
             if process_detail:
                 _trimap = generate_VITMatte_trimap(pil2tensor(_mask), detail_erode, detail_dilate)
                 _mask = generate_VITMatte(orig_image, _trimap, local_files_only=local_files_only, device=device,
-                                          max_megapixels=max_megapixels)
+                                          max_megapixels=max_megapixels, method=detail_method)
                 _mask = tensor2pil(histogram_remap(pil2tensor(_mask), black_point, white_point))
 
             color_image = Image.new("RGB", orig_image.size,color=mask_preview_color)

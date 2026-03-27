@@ -19,7 +19,7 @@ class PersonMaskUltraV2:
     @classmethod
     def INPUT_TYPES(self):
 
-        method_list = ['VITMatte', 'VITMatte(local)', 'PyMatting', 'GuidedFilter', ]
+        method_list = ['VITMatte', 'VITMatte(local)', 'vitmatte-base-composition-1k', 'PyMatting', 'GuidedFilter', ]
         device_list = ['cuda','cpu']
         return {
             "required":
@@ -162,7 +162,7 @@ class PersonMaskUltraV2:
                                              detail_range // 8 + 1, black_point, white_point))
                     else:
                         _trimap = generate_VITMatte_trimap(_mask, detail_erode, detail_dilate)
-                        _mask = generate_VITMatte(orig_image, _trimap, local_files_only=local_files_only, device=device, max_megapixels=max_megapixels)
+                        _mask = generate_VITMatte(orig_image, _trimap, local_files_only=local_files_only, device=device, max_megapixels=max_megapixels, method=detail_method)
                         _mask = tensor2pil(histogram_remap(pil2tensor(_mask), black_point, white_point))
                 else:
                     _mask = mask2image(_mask)

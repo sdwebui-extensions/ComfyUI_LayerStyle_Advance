@@ -20,7 +20,7 @@ class EVF_SAM_Ultra:
         model_list = ["evf-sam2", "evf-sam"]
         precision_list = ["fp16", "bf16", "fp32"]
         load_in_bit_list = ["full", "8", "4"]
-        method_list = ['VITMatte', 'VITMatte(local)', 'PyMatting', 'GuidedFilter', ]
+        method_list = ['VITMatte', 'VITMatte(local)', 'vitmatte-base-composition-1k', 'PyMatting', 'GuidedFilter', ]
         device_list = ['cuda', 'cpu']
         return {"required":
             {
@@ -100,7 +100,7 @@ class EVF_SAM_Ultra:
                 else:
                     _trimap = generate_VITMatte_trimap(_mask, detail_erode, detail_dilate)
                     _mask = generate_VITMatte(orig_image, _trimap, local_files_only=local_files_only, device=device,
-                                              max_megapixels=max_megapixels)
+                                              max_megapixels=max_megapixels, method=detail_method)
                     _mask = tensor2pil(histogram_remap(pil2tensor(_mask), black_point, white_point))
             else:
                 _mask = mask2image(_mask)

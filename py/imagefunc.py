@@ -1386,58 +1386,6 @@ def decode_watermark(image:Image, watermark_image_size:int=94) -> Image:
     ret_image = normalize_gray(ret_image)
     return ret_image
 
-# def generate_text_image(text:str, font_path:str, font_size:int, text_color:str="#FFFFFF",
-#                         vertical:bool=True, stroke_width:int=1, stroke_color:str="#000000",
-#                          spacing:int=0, leading:int=0) -> tuple:
-#
-#     lines = text.split("\n")
-#     if vertical:
-#         layout = "vertical"
-#     else:
-#         layout = "horizontal"
-#     char_coordinates = []
-#     if layout == "vertical":
-#         x = 0
-#         y = 0
-#         for i in range(len(lines)):
-#             line = lines[i]
-#             for char in line:
-#                 char_coordinates.append((x, y))
-#                 y += font_size + spacing
-#             x += font_size + leading
-#             y = 0
-#     else:
-#         x = 0
-#         y = 0
-#         for line in lines:
-#             for char in line:
-#                 char_coordinates.append((x, y))
-#                 x += font_size + spacing
-#             y += font_size + leading
-#             x = 0
-#     if layout == "vertical":
-#         width = (len(lines) * (font_size + spacing)) - spacing
-#         height = ((len(max(lines, key=len)) + 1) * (font_size + spacing)) + spacing
-#     else:
-#         width = (len(max(lines, key=len)) * (font_size + spacing)) - spacing
-#         height = ((len(lines) - 1) * (font_size + spacing)) + font_size
-#
-#     image = Image.new('RGBA', size=(width, height), color=stroke_color)
-#     draw = ImageDraw.Draw(image)
-#     font = ImageFont.truetype(font_path, font_size)
-#     index = 0
-#     for i, line in enumerate(lines):
-#         for j, char in enumerate(line):
-#             x, y = char_coordinates[index]
-#             if stroke_width > 0:
-#                 draw.text((x - stroke_width, y), char, font=font, fill=stroke_color)
-#                 draw.text((x + stroke_width, y), char, font=font, fill=stroke_color)
-#                 draw.text((x, y - stroke_width), char, font=font, fill=stroke_color)
-#                 draw.text((x, y + stroke_width), char, font=font, fill=stroke_color)
-#             draw.text((x, y), char, font=font, fill=text_color)
-#             index += 1
-#     return (image.convert('RGB'), image.split()[3])
-
 def generate_text_image(width:int, height:int, text:str, font_file:str, text_scale:float=1, font_color:str="#FFFFFF",) -> Image:
     image = Image.new("RGBA", (width, height), (0, 0, 0, 0))
     draw = ImageDraw.Draw(image)
@@ -1449,6 +1397,61 @@ def generate_text_image(width:int, height:int, text:str, font_file:str, text_sca
     y = int((height - text_height) / 2) - int(font_size / 2)
     draw.text((x, y), text, font=font, fill=font_color)
     return image
+
+def displacement_image(image: Image, displacement_map: Image, strength: float, smoothness: int, anti_aliasing: int) -> Image:
+
+    if image.mode != 'RGB':
+        image = image.convert('RGB')
+    if displacement_map.mode != 'L':
+        displacement_map = displacement_map.convert('L')
+
+    orig_w, orig_h = image.size
+
+    if displacement_map.size != image.size:
+        displacement_map = displacement_map.resize(image.size, Image.LANCZOS)
+
+    if smoothness:
+        displacement_map = gaussian_blur(displacement_map, smoothness)
+
+    if anti_aliasing > 1:
+        up_size = (orig_w * anti_aliasing, orig_h * anti_aliasing)
+        image = image.resize(up_size, Image.LANCZOS)
+        displacement_map = displacement_map.resize(up_size, Image.LANCZOS)
+
+    img = np.asarray(image)
+    disp = np.asarray(displacement_map).astype(np.float32)
+
+    h, w = disp.shape
+
+    ys, xs = np.meshgrid(
+        np.arange(h, dtype=np.int32),
+        np.arange(w, dtype=np.int32),
+        indexing="ij"
+    )
+
+    offset = (disp / 255.0 * strength * anti_aliasing).astype(np.int32)
+
+    new_x = xs + offset
+    new_y = ys + offset
+
+    def mirror(coord, size):
+        coord = np.where(coord < 0, -coord, coord)
+        coord = np.where(coord >= size, 2 * size - coord - 1, coord)
+        return coord
+
+    new_x = mirror(new_x, w)
+    new_y = mirror(new_y, h)
+
+    out = img[new_y, new_x]
+
+    ret = Image.fromarray(out, mode="RGB")
+
+    if anti_aliasing > 1:
+        ret = gaussian_blur(ret, int(anti_aliasing / 3))
+        ret = ret.resize((orig_w, orig_h), Image.LANCZOS)
+
+    return ret
+
 
 '''Mask Functions'''
 
@@ -1577,7 +1580,19 @@ def load_VITMatte_model(model_name:str, local_files_only:bool=False) -> object:
     vitmatte = VITMatteModel(model, processor)
     return vitmatte
 
-def generate_VITMatte(image:Image, trimap:Image, local_files_only:bool=False, device:str="cpu", max_megapixels:float=2.0) -> Image:
+
+def load_VITMatte_base_model(model_name:str, local_files_only:bool=False) -> object:
+    model_name = "vitmatte-base-composition-1k"
+    model_repo = "hustvl/vitmatte-base-composition-1k"
+    model_path  = check_and_download_model(model_name, model_repo)
+    from transformers import VitMatteImageProcessor, VitMatteForImageMatting
+    model = VitMatteForImageMatting.from_pretrained(model_path, local_files_only=local_files_only)
+    processor = VitMatteImageProcessor.from_pretrained(model_path, local_files_only=local_files_only)
+    vitmatte = VITMatteModel(model, processor)
+    return vitmatte
+
+def generate_VITMatte(image:Image, trimap:Image, local_files_only:bool=False, device:str="cpu",
+                      max_megapixels:float=2.0, method:str="VITMatte") -> Image:
     if image.mode != 'RGB':
         image = image.convert('RGB')
     if trimap.mode != 'L':
@@ -1604,7 +1619,12 @@ def generate_VITMatte(image:Image, trimap:Image, local_files_only:bool=False, de
         else:
             log("vitmatte device is set to cuda, but not available, using cpu instead.")
             device = torch.device('cpu')
-    vit_matte_model = load_VITMatte_model(model_name=model_name, local_files_only=local_files_only)
+    if method == "vitmatte-base-composition-1k":
+        model_name = "hustvl/vitmatte-base-composition-1k"
+        vit_matte_model = load_VITMatte_base_model(model_name=model_name, local_files_only=local_files_only)
+    else:
+        model_name = "hustvl/vitmatte-small-composition-1k"
+        vit_matte_model = load_VITMatte_model(model_name=model_name, local_files_only=local_files_only)
     vit_matte_model.model.to(device)
     # log(f"vitmatte processing, image size = {image.width}x{image.height}, device = {device}.")
     inputs = vit_matte_model.processor(images=image, trimaps=trimap, return_tensors="pt")
