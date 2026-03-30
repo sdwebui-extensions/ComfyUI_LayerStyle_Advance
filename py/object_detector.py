@@ -59,12 +59,13 @@ class LS_BBOXES_JOIN:
     CATEGORY = '😺dzNodes/LayerMask'
 
     def bboxes_join(self, bboxes_1, bboxes_2=None, bboxes_3=None, bboxes_4=None):
-        if bboxes_2 is not None:
-            bboxes_1.extend(bboxes_2)
-        if bboxes_3 is not None:
-            bboxes_1.extend(bboxes_3)
-        if bboxes_4 is not None:
-            bboxes_1.extend(bboxes_4)
+        all_inputs = [b for b in [bboxes_2, bboxes_3, bboxes_4] if b is not None]
+        for other in all_inputs:
+            for i in range(len(other)):
+                if i < len(bboxes_1):
+                    bboxes_1[i].extend(other[i])
+                else:
+                    bboxes_1.append(other[i])
         return (bboxes_1,)
 
 class LS_OBJECT_DETECTOR_FL2:
