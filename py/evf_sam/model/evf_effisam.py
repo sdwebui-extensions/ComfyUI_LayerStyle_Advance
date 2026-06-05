@@ -3,7 +3,10 @@ from typing import List, Tuple
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from transformers import PreTrainedModel, AutoConfig, AutoModelForCausalLM
+try:
+    from transformers_471 import PreTrainedModel, AutoConfig, AutoModelForCausalLM
+except:
+    from transformers import PreTrainedModel, AutoConfig, AutoModelForCausalLM
 from .EfficientSAM.efficient_sam.build_efficient_sam import build_efficient_sam_vits, build_efficient_sam_vitt
 from .unilm.beit3.modeling_utils import BEiT3Wrapper, _get_base_config, _get_large_config
 from .configuration_evf import EvfConfig

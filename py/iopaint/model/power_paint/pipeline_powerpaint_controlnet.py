@@ -22,7 +22,10 @@ import numpy as np
 import PIL.Image
 import torch
 import torch.nn.functional as F
-from transformers import CLIPImageProcessor, CLIPTextModel, CLIPTokenizer
+try:
+    from transformers_471 import CLIPImageProcessor, CLIPTextModel, CLIPTokenizer
+except:
+    from transformers import CLIPImageProcessor, CLIPTextModel, CLIPTokenizer
 
 from diffusers.image_processor import VaeImageProcessor
 from diffusers.loaders import FromSingleFileMixin, LoraLoaderMixin, TextualInversionLoaderMixin

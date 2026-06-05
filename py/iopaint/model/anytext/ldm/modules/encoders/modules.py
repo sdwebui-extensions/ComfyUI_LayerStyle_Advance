@@ -2,14 +2,24 @@ import torch
 import torch.nn as nn
 from torch.utils.checkpoint import checkpoint
 
-from transformers import (
-    T5Tokenizer,
-    T5EncoderModel,
-    CLIPTokenizer,
-    CLIPTextModel,
-    AutoProcessor,
-    CLIPVisionModelWithProjection,
-)
+try:
+    from transformers_471 import (
+        T5Tokenizer,
+        T5EncoderModel,
+        CLIPTokenizer,
+        CLIPTextModel,
+        AutoProcessor,
+        CLIPVisionModelWithProjection,
+    )
+except:
+    from transformers import (
+        T5Tokenizer,
+        T5EncoderModel,
+        CLIPTokenizer,
+        CLIPTextModel,
+        AutoProcessor,
+        CLIPVisionModelWithProjection,
+    )
 
 from iopaint.model.anytext.ldm.util import count_params
 

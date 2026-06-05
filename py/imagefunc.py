@@ -30,7 +30,10 @@ from PIL import Image, ImageFilter, ImageChops, ImageDraw, ImageOps, ImageEnhanc
 from skimage import img_as_float, img_as_ubyte
 import torchvision.transforms.functional as TF
 import torch.nn.functional as F
-from transformers import AutoModel, AutoProcessor, StoppingCriteria, StoppingCriteriaList, AutoModelForCausalLM, AutoTokenizer
+try:
+    from transformers_471 import AutoModel, AutoProcessor, StoppingCriteria, StoppingCriteriaList, AutoModelForCausalLM, AutoTokenizer
+except:
+    from transformers import AutoModel, AutoProcessor, StoppingCriteria, StoppingCriteriaList, AutoModelForCausalLM, AutoTokenizer
 from colorsys import rgb_to_hsv
 import folder_paths
 import comfy.model_management
@@ -1574,7 +1577,10 @@ def load_VITMatte_model(model_name:str, local_files_only:bool=False) -> object:
         model_path  = check_and_download_model(model_name, model_repo, cache_dir=os.path.join(folder_paths.cache_dir, "models"))
     else:
         model_path = model_name
-    from transformers import VitMatteImageProcessor, VitMatteForImageMatting
+    try:
+        from transformers_471 import VitMatteImageProcessor, VitMatteForImageMatting
+    except:
+        from transformers import VitMatteImageProcessor, VitMatteForImageMatting
     model = VitMatteForImageMatting.from_pretrained(model_path, local_files_only=local_files_only)
     processor = VitMatteImageProcessor.from_pretrained(model_path, local_files_only=local_files_only)
     vitmatte = VITMatteModel(model, processor)
@@ -1585,7 +1591,10 @@ def load_VITMatte_base_model(model_name:str, local_files_only:bool=False) -> obj
     model_name = "vitmatte-base-composition-1k"
     model_repo = "hustvl/vitmatte-base-composition-1k"
     model_path  = check_and_download_model(model_name, model_repo)
-    from transformers import VitMatteImageProcessor, VitMatteForImageMatting
+    try:
+        from transformers_471 import VitMatteImageProcessor, VitMatteForImageMatting
+    except:
+        from transformers import VitMatteImageProcessor, VitMatteForImageMatting
     model = VitMatteForImageMatting.from_pretrained(model_path, local_files_only=local_files_only)
     processor = VitMatteImageProcessor.from_pretrained(model_path, local_files_only=local_files_only)
     vitmatte = VITMatteModel(model, processor)

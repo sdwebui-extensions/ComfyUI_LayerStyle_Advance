@@ -1,5 +1,8 @@
 import torch
-from transformers import PreTrainedModel
+try:
+    from transformers_471 import PreTrainedModel
+except:
+    from transformers import PreTrainedModel
 
 from ..utils import torch_gc
 

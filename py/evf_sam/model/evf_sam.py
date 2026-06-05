@@ -3,7 +3,10 @@ from typing import List
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from transformers import PreTrainedModel, AutoConfig, AutoModelForCausalLM
+try:
+    from transformers_471 import PreTrainedModel, AutoConfig, AutoModelForCausalLM
+except:
+    from transformers import PreTrainedModel, AutoConfig, AutoModelForCausalLM
 from .segment_anything import build_sam_vit_h
 from .unilm.beit3.modeling_utils import BEiT3Wrapper, _get_base_config, _get_large_config
 from .configuration_evf import EvfConfig

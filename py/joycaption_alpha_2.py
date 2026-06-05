@@ -77,8 +77,12 @@ class ImageAdapter(nn.Module):
         return self.other_tokens(torch.tensor([2], device=self.other_tokens.weight.device)).squeeze(0)
 
 def load_models(model_path, dtype, vlm_lora, device):
-    from transformers import AutoModel, AutoProcessor, AutoTokenizer, PreTrainedTokenizer, PreTrainedTokenizerFast, \
-        AutoModelForCausalLM
+    try:
+        from transformers_471 import AutoModel, AutoProcessor, AutoTokenizer, PreTrainedTokenizer, PreTrainedTokenizerFast, \
+            AutoModelForCausalLM
+    except:
+        from transformers import AutoModel, AutoProcessor, AutoTokenizer, PreTrainedTokenizer, PreTrainedTokenizerFast, \
+            AutoModelForCausalLM
     from peft import PeftModel
 
     use_lora = True if vlm_lora != "none" else False
@@ -92,7 +96,10 @@ def load_models(model_path, dtype, vlm_lora, device):
 
     try:
         if dtype=="nf4":
-            from transformers import BitsAndBytesConfig
+            try:
+                from transformers_471 import BitsAndBytesConfig
+            except:
+                from transformers import BitsAndBytesConfig
             nf4_config = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4",
                                             bnb_4bit_use_double_quant=True, bnb_4bit_compute_dtype=torch.bfloat16)
             print("Loading in NF4")

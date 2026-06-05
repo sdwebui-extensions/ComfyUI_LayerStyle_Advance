@@ -16,9 +16,14 @@ import warnings
 
 from typing import Optional
 
-from transformers import AutoConfig
-from transformers.configuration_utils import PretrainedConfig
-from transformers.utils import logging
+try:
+    from transformers_471 import AutoConfig
+    from transformers_471.configuration_utils import PretrainedConfig
+    from transformers_471.utils import logging
+except:
+    from transformers import AutoConfig
+    from transformers.configuration_utils import PretrainedConfig
+    from transformers.utils import logging
 
 logger = logging.get_logger(__name__)
 

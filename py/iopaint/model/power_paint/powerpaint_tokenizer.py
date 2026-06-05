@@ -3,7 +3,10 @@ import torch.nn as nn
 import copy
 import random
 from typing import Any, List, Optional, Union
-from transformers import CLIPTokenizer
+try:
+    from transformers_471 import CLIPTokenizer
+except:
+    from transformers import CLIPTokenizer
 
 from ...schema import PowerPaintTask
 

@@ -806,7 +806,10 @@ def build_imagenet_transform(is_train, args):
 
 
 def get_sentencepiece_model_for_beit3(args):
-    from transformers import XLMRobertaTokenizer
+    try:
+        from transformers_471 import XLMRobertaTokenizer
+    except:
+        from transformers import XLMRobertaTokenizer
     return XLMRobertaTokenizer(args.sentencepiece_model)
 
 

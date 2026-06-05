@@ -2,7 +2,10 @@ import os
 import sys
 import torch
 from PIL import Image
-from transformers import AutoProcessor, LlavaForConditionalGeneration, BitsAndBytesConfig
+try:
+    from transformers_471 import AutoProcessor, LlavaForConditionalGeneration, BitsAndBytesConfig
+except:
+    from transformers import AutoProcessor, LlavaForConditionalGeneration, BitsAndBytesConfig
 from tqdm import tqdm
 import folder_paths
 from comfy.utils import ProgressBar

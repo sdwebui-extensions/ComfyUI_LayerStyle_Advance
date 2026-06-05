@@ -7,7 +7,10 @@ from typing import Any, Dict, List
 
 import numpy as np
 import torch
-from transformers import AutoTokenizer
+try:
+    from transformers_471 import AutoTokenizer
+except:
+    from transformers import AutoTokenizer
 
 from local_groundingdino.util.slconfig import SLConfig
 

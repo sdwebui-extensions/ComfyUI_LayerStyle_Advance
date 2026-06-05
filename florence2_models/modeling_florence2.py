@@ -31,35 +31,66 @@ try:
 except:
     from timm.layers import DropPath, trunc_normal_
 
-from transformers.modeling_utils import PreTrainedModel
-from transformers.generation.utils import GenerationMixin
-from transformers.utils import (
-    ModelOutput,
-    add_start_docstrings,
-    add_start_docstrings_to_model_forward,
-    is_flash_attn_2_available,
-    logging,
-    replace_return_docstrings,
-    is_flash_attn_2_available,
-)
-from .configuration_florence2 import Florence2Config 
-from .configuration_florence2 import Florence2LanguageConfig
-from .configuration_florence2 import Florence2VisionConfig
+try:
+    from transformers_471.modeling_utils import PreTrainedModel
+    from transformers_471.generation.utils import GenerationMixin
+    from transformers_471.utils import (
+        ModelOutput,
+        add_start_docstrings,
+        add_start_docstrings_to_model_forward,
+        is_flash_attn_2_available,
+        logging,
+        replace_return_docstrings,
+        is_flash_attn_2_available,
+    )
+    from .configuration_florence2 import Florence2Config 
+    from .configuration_florence2 import Florence2LanguageConfig
+    from .configuration_florence2 import Florence2VisionConfig
 
 
-from transformers.activations import ACT2FN
-from transformers.modeling_attn_mask_utils import (
-    _prepare_4d_attention_mask,
-    _prepare_4d_attention_mask_for_sdpa,
-    _prepare_4d_causal_attention_mask,
-    _prepare_4d_causal_attention_mask_for_sdpa,
-)
-from transformers.modeling_outputs import (
-    BaseModelOutput,
-    BaseModelOutputWithPastAndCrossAttentions,
-    Seq2SeqLMOutput,
-    Seq2SeqModelOutput,
-)
+    from transformers_471.activations import ACT2FN
+    from transformers_471.modeling_attn_mask_utils import (
+        _prepare_4d_attention_mask,
+        _prepare_4d_attention_mask_for_sdpa,
+        _prepare_4d_causal_attention_mask,
+        _prepare_4d_causal_attention_mask_for_sdpa,
+    )
+    from transformers_471.modeling_outputs import (
+        BaseModelOutput,
+        BaseModelOutputWithPastAndCrossAttentions,
+        Seq2SeqLMOutput,
+        Seq2SeqModelOutput,
+    )
+except:
+    from transformers.modeling_utils import PreTrainedModel
+    from transformers.generation.utils import GenerationMixin
+    from transformers.utils import (
+        ModelOutput,
+        add_start_docstrings,
+        add_start_docstrings_to_model_forward,
+        is_flash_attn_2_available,
+        logging,
+        replace_return_docstrings,
+        is_flash_attn_2_available,
+    )
+    from .configuration_florence2 import Florence2Config 
+    from .configuration_florence2 import Florence2LanguageConfig
+    from .configuration_florence2 import Florence2VisionConfig
+
+
+    from transformers.activations import ACT2FN
+    from transformers.modeling_attn_mask_utils import (
+        _prepare_4d_attention_mask,
+        _prepare_4d_attention_mask_for_sdpa,
+        _prepare_4d_causal_attention_mask,
+        _prepare_4d_causal_attention_mask_for_sdpa,
+    )
+    from transformers.modeling_outputs import (
+        BaseModelOutput,
+        BaseModelOutputWithPastAndCrossAttentions,
+        Seq2SeqLMOutput,
+        Seq2SeqModelOutput,
+    )
 
 
 if is_flash_attn_2_available():

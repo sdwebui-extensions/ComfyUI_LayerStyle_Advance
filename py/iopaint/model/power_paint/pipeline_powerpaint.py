@@ -19,7 +19,10 @@ import numpy as np
 import PIL
 import torch
 from packaging import version
-from transformers import CLIPImageProcessor, CLIPTextModel, CLIPTokenizer
+try:
+    from transformers_471 import CLIPImageProcessor, CLIPTextModel, CLIPTokenizer
+except:
+    from transformers import CLIPImageProcessor, CLIPTextModel, CLIPTokenizer
 from diffusers.configuration_utils import FrozenDict
 from diffusers.image_processor import VaeImageProcessor
 from diffusers.loaders import (

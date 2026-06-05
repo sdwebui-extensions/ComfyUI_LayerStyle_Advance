@@ -4,7 +4,10 @@ import numpy as np
 import os
 import torch
 from PIL import Image
-from transformers import AutoModelForCausalLM, AutoProcessor, AutoTokenizer, pipeline
+try:
+    from transformers_471 import AutoModelForCausalLM, AutoProcessor, AutoTokenizer, pipeline
+except:
+    from transformers import AutoModelForCausalLM, AutoProcessor, AutoTokenizer, pipeline
 import folder_paths
 from .imagefunc import log, clear_memory
 

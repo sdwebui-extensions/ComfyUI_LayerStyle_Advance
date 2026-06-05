@@ -4,7 +4,7 @@ import os
 import sys
 import torch
 from torchvision import transforms
-from transformers import AutoModelForImageSegmentation
+from transformers_471 import AutoModelForImageSegmentation
 import tqdm
 from .imagefunc import *
 from comfy.utils import ProgressBar

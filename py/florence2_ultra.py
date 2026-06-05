@@ -5,7 +5,10 @@ from unittest.mock import patch
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import colorsys
-from transformers.dynamic_module_utils import get_imports
+try:
+    from transformers_471.dynamic_module_utils import get_imports
+except:
+    from transformers.dynamic_module_utils import get_imports
 import comfy.model_management
 from .imagefunc import *
 
@@ -61,8 +64,11 @@ def load_model(version):
             snapshot_download(repo_id=repo_id, local_dir=model_path, ignore_patterns=["*.md", "*.txt"])
 
     try:
-        import transformers
-        if transformers.__version__ < '4.51.0':
+        try:
+            import transformers_471
+        except:
+            import transformers as transformers_471
+        if transformers_471.__version__ < '4.51.0':
             with patch("transformers.dynamic_module_utils.get_imports", fixed_get_imports): #workaround for unnecessary flash_attn requirement
                  model = AutoModelForCausalLM.from_pretrained(model_path, attn_implementation=attention, torch_dtype=torch.float32,trust_remote_code=True, device_map=device)
         else:
@@ -71,7 +77,7 @@ def load_model(version):
         processor = AutoProcessor.from_pretrained(model_path, trust_remote_code=True)
     except Exception as e:
         try:
-            if transformers.__version__ < '4.51.0':
+            if transformers_471.__version__ < '4.51.0':
                 with patch("transformers.dynamic_module_utils.get_imports", fixed_get_imports): #workaround for unnecessary flash_attn requirement
                     model = AutoModelForCausalLM.from_pretrained(model_path, attn_implementation=attention, torch_dtype=torch.float32,trust_remote_code=True, device_map=device)
             else:
